@@ -1,0 +1,19 @@
+<section>
+  <div>
+    <h1>Digite aqui a meta</h1>
+  </div>
+  <div class="input_value">
+    <div>
+      <p>Meta</p>
+      <input #input type="number">
+    </div>
+    <!-- <div>
+      <p>Tempo</p>
+      <input #date type="number">
+    </div> -->
+  </div>
+    <mat-dialog-actions align="end">
+        <button  mat-button mat-dialog-close>Cancel</button>
+        <button mat-raised-button color="warn" [mat-dialog-close]="input.value +','" cdkFocusInitial>ok</button>
+      </mat-dialog-actions>
+</section>

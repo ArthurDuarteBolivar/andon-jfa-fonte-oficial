@@ -1,0 +1,99 @@
+.actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    height: 40%;
+}
+
+section {
+    width: 100%;
+    height: 100%;
+    background-color: black;
+}
+
+.info {
+    height: 30%;
+    div{
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        h1 {
+            padding: 2rem;
+            font-weight: 800;
+            font-size: 2.5rem;
+            color: white;
+        }
+    }
+    h1 {
+        text-align: center;
+        padding: 2rem;
+        font-weight: 800;
+        font-size: 2.5rem;
+        color: white;
+    }
+}
+
+button {
+    font-weight: 800;
+    cursor: pointer;
+    border: 1px solid black;
+    background-color: white;
+    border-radius: 0.5rem;
+    text-align: center;
+    font-size: 3rem;
+    width: 30%;
+    height: 100%;
+}
+
+.help {
+    display: flex;
+    color: white;
+    align-items: center;
+    cursor: help;
+    margin-left: 1rem;
+    margin-top: 1.5rem;
+    h1 {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+
+        mat-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            margin-right: 20px;
+        }
+
+        text-align: center;
+        margin: 0 1rem;
+    }
+
+}
+
+@media (max-width: 800px) {
+    div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-around;
+        width: 100%;
+        height: 100%;
+        background-color: black;
+
+    }
+
+    button {
+        cursor: pointer;
+        border: 1px solid black;
+        background-color: white;
+        border-radius: 1rem;
+        text-align: center;
+        font-size: 3rem;
+        width: 90%;
+        height: 30%;
+    }
+
+
+}

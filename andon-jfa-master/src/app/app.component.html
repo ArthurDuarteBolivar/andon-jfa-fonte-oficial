@@ -1,0 +1,296 @@
+<mat-spinner *ngIf="init == false"></mat-spinner>
+<section *ngIf="init">
+  <div class="div3">
+    <h1>PRODUÇÃO</h1>
+  </div>
+
+  <div class="div2">
+    <div>
+      <p><button class="button" (click)="openDialog()">Imposto</button></p>
+      <p class="value">{{ imposto | number : "1.0-0" }}</p>
+    </div>
+    <div>
+      <p>Previsto</p>
+      <p class="value">
+        {{ previsto | number : "1.0-0" }}
+      </p>
+    </div>
+    <div>
+      <p>Realizado</p>
+      <p class="value text_black" [ngStyle]="{ 'background-color': '#00FF00' }">{{ realizado | number : "1.0-0" }}</p>
+    </div>
+    <div>
+      <p>Delta</p>
+      <p class="value text_black " [ngStyle]="{'background-color':0 <= realizado - previsto   ? '#00FF00' : 'red'
+      }">{{ realizado - previsto | number :"1.0-0" }}</p>
+    </div>
+    <div>
+      <p>Delta(%)</p>
+      <p class="value text_black" [ngStyle]="{
+        'background-color':
+          0 > ((previsto - realizado) / previsto) * 100   ? '#00FF00' : 'red'
+      }">
+        {{
+        ((realizado - previsto) / previsto) * 100 | number : "1.0-0"
+        }}
+      </p>
+    </div>
+  </div>
+
+  <div class="div4">
+    <div>
+      <p>Impostação Horaria</p>
+      <p class="value">{{ imposto / shiftTime | number : "1.0-0" }}</p>
+    </div>
+    <div>
+      <p>Média Horaria</p>
+      <p class="value text_black" [ngStyle]="{ 'background-color': '#00FF00' }">{{realizado/(effectiveTime/60) | number
+        : "1.0-0" }}</p>
+    </div>
+    <div>
+      <p>TC Impostado</p>
+      <p class="value">{{TCimpostado | number : "1.0-0" }}</p>
+    </div>
+    <div>
+      <p>TC Médio Realizado</p>
+      <p class="value text_black" [ngStyle]="{ 'background-color': '#00FF00' }">{{3600/(realizado/(effectiveTime/60)) |
+        number : "1.0-0" }}</p>
+    </div>
+  </div>
+
+
+  <table class="div1">
+    <tr>
+      <th class="border-th">Operação</th>
+      <td *ngFor="let item of nodemcu" [ngStyle]="{
+          'background-color': item.state === 'verde' ? '#00FF00':  (item.state === 'azul' ? '#5ac5e9' : 'red')
+        }">
+        {{ item.nameId.name }}
+      </td>
+    </tr>
+    <tr>
+      <th>TC médio do turno</th>
+      <td *ngFor="let item of nodemcu" [ngStyle]="{
+          'background-color': item.tcmedio <= TCimpostado ? '#00FF00' : 'red'
+        }">
+        {{ item.tcmedio }}
+      </td>
+    </tr>
+    <tr>
+      <th>Quantidade</th>
+      <td *ngFor="let item of nodemcu" [ngStyle]="{ 'background-color': '#00FF00' }">
+        {{ item.count }}
+      </td>
+    </tr>
+    <tr>
+      <th>Qtde em manutenção</th>
+      <td *ngFor="let item of nodemcu" [ngStyle]="{ color: 'white' }">
+        {{ item.maintenance }}
+      </td>
+    </tr>
+    <tr>
+      <th>Qtde de TC excedido</th>
+      <td *ngFor="let item of nodemcu" [ngStyle]="{ 'background-color': '#00FF00' }">
+        {{ item.qtdeTCexcedido }}
+      </td>
+    </tr>
+    <tr>
+      <th>3º Último TC</th>
+      <td *ngFor="let item of nodemcu" [ngStyle]="{
+          'background-color':
+          TCimpostado >= item.secondtlastTC ? '#00FF00' : ((TCimpostado * 3) <= item.secondtlastTC  ? 'red' : '#5ac5e9')
+        }">
+        {{ item.secondtlastTC }}
+      </td>
+    </tr>
+    <tr>
+      <th>2º Último TC</th>
+      <td *ngFor="let item of nodemcu" [ngStyle]="{
+          'background-color':
+          TCimpostado >= item.firtlastTC ? '#00FF00' : ((TCimpostado * 3) <= item.firtlastTC  ? 'red' : '#5ac5e9')
+        }">
+        {{ item.firtlastTC }}
+      </td>
+    </tr>
+    <tr>
+      <th>1º Último TC</th>
+      <td *ngFor="let item of nodemcu" [ngStyle]="{
+          'background-color':
+          TCimpostado >= item.currentTC ? '#00FF00' : ((TCimpostado * 3) <= item.currentTC  ? 'red' : '#5ac5e9')
+        }">
+        {{ item.currentTC }}
+      </td>
+    </tr>
+    <tr>
+      <th>Tempo Ciclo Atual</th>
+      <td *ngFor="let item of nodemcu" [ngStyle]="{
+          'background-color':
+          TCimpostado >= item.localTC ? '#00FF00' : ((TCimpostado * 3) <= item.localTC  ? 'red' : '#5ac5e9')
+        }">
+        {{ item.localTC }}
+      </td>
+    </tr>
+  </table>
+  <table class="div5">
+    <tr>
+      <th>Horas</th>
+      <td class="horas">
+        <mat-icon *ngIf="realizadoHora.horas7 > minutos8 * ((imposto / shiftTime) / 60)">keyboard_arrow_up</mat-icon>
+        <p class="text-verde" *ngIf="realizadoHora.horas7 > minutos8 * ((imposto / shiftTime) / 60)">
+          +{{((realizadoHora.horas7 - minutos8 * ((imposto / shiftTime) / 60)) / (minutos8 * ((imposto / shiftTime) /
+          60)) * 100).toFixed(0)}}%</p>
+        <mat-icon *ngIf="realizadoHora.horas7 < minutos8 * ((imposto / shiftTime) / 60)">keyboard_arrow_down</mat-icon>
+        <p class="text-vermelho" *ngIf="realizadoHora.horas7 < minutos8 * ((imposto / shiftTime) / 60)">-{{((minutos8 *
+          ((imposto / shiftTime) / 60) - realizadoHora.horas7) / (minutos8 * ((imposto / shiftTime) /
+          60)) * 100).toFixed(0)}}%</p>
+        8
+      </td>
+      <td class="horas">
+        <mat-icon *ngIf="realizadoHora.horas8 > minutos9 * ((imposto / shiftTime) / 60)">keyboard_arrow_up</mat-icon>
+        <p class="text-verde" *ngIf="realizadoHora.horas8 > minutos9 * ((imposto / shiftTime) / 60)">
+          +{{((realizadoHora.horas8 - minutos9 * ((imposto / shiftTime) / 60)) / (minutos9 * ((imposto / shiftTime) /
+          60)) * 100).toFixed(0)}}%</p>
+        <mat-icon *ngIf="realizadoHora.horas8 < minutos9 * ((imposto / shiftTime) / 60)">keyboard_arrow_down</mat-icon>
+        <p class="text-vermelho" *ngIf="realizadoHora.horas8 < minutos9 * ((imposto / shiftTime) / 60)">-{{((minutos9 *
+          ((imposto / shiftTime) / 60) - realizadoHora.horas8) / (minutos9 * ((imposto / shiftTime) /
+          60)) * 100).toFixed(0)}}%</p>
+        9
+      </td>
+      <td class="horas">
+        <mat-icon *ngIf="realizadoHora.horas9 > minutos10 * ((imposto / shiftTime) / 60)">keyboard_arrow_up</mat-icon>
+        <p class="text-verde" *ngIf="realizadoHora.horas9 > minutos10 * ((imposto / shiftTime) / 60)">
+          +{{((realizadoHora.horas9 - minutos10 * ((imposto / shiftTime) / 60)) / (minutos10 * ((imposto / shiftTime) /
+          60)) * 100).toFixed(0)}}%</p>
+        <mat-icon *ngIf="realizadoHora.horas9 < minutos10 * ((imposto / shiftTime) / 60)">keyboard_arrow_down</mat-icon>
+        <p class="text-vermelho" *ngIf="realizadoHora.horas9 < minutos10 * ((imposto / shiftTime) / 60)">-{{((minutos10 *
+          ((imposto / shiftTime) / 60) - realizadoHora.horas9) / (minutos10 * ((imposto / shiftTime) /
+          60)) * 100).toFixed(0)}}%</p>
+        10
+      </td>
+
+      <td class="horas">
+        <mat-icon *ngIf="realizadoHora.horas10 > minutos11 * ((imposto / shiftTime) / 60)">keyboard_arrow_up</mat-icon>
+        <p class="text-verde" *ngIf="realizadoHora.horas10 > minutos11 * ((imposto / shiftTime) / 60)">
+          +{{((realizadoHora.horas10 - minutos11 * ((imposto / shiftTime) / 60)) / (minutos11 * ((imposto / shiftTime) /
+          60)) * 100).toFixed(0)}}%</p>
+        <mat-icon
+          *ngIf="realizadoHora.horas10 < minutos11 * ((imposto / shiftTime) / 60)">keyboard_arrow_down</mat-icon>
+        <p class="text-vermelho" *ngIf="realizadoHora.horas10 < minutos11 * ((imposto / shiftTime) / 60)">-{{((minutos11
+          * ((imposto / shiftTime) / 60) - realizadoHora.horas10) / (minutos11 * ((imposto / shiftTime) /
+          60)) * 100).toFixed(0)}}%</p>
+        11
+      </td>
+
+      <td class="horas">
+        <mat-icon *ngIf="realizadoHora.horas11 > minutos12 * ((imposto / shiftTime) / 60)">keyboard_arrow_up</mat-icon>
+        <p class="text-verde" *ngIf="realizadoHora.horas11 > minutos12 * ((imposto / shiftTime) / 60)">
+          +{{((realizadoHora.horas11 - minutos12 * ((imposto / shiftTime) / 60)) / (minutos12 * ((imposto / shiftTime) /
+          60)) * 100).toFixed(0)}}%</p>
+        <mat-icon
+          *ngIf="realizadoHora.horas11 < minutos12 * ((imposto / shiftTime) / 60)">keyboard_arrow_down</mat-icon>
+        <p class="text-vermelho" *ngIf="realizadoHora.horas11 < minutos12 * ((imposto / shiftTime) / 60)">-{{((minutos12
+          * ((imposto / shiftTime) / 60) - realizadoHora.horas11) / (minutos12 * ((imposto / shiftTime) /
+          60)) * 100).toFixed(0)}}%</p>
+        12
+      </td>
+
+      <td class="horas">
+        <mat-icon *ngIf="realizadoHora.horas12 > minutos13 * ((imposto / shiftTime) / 60)">keyboard_arrow_up</mat-icon>
+        <p class="text-verde" *ngIf="realizadoHora.horas12 > minutos13 * ((imposto / shiftTime) / 60)">
+          +{{((realizadoHora.horas12 - minutos13 * ((imposto / shiftTime) / 60)) / (minutos13 * ((imposto / shiftTime) /
+          60)) * 100).toFixed(0)}}%</p>
+        <mat-icon
+          *ngIf="realizadoHora.horas12 < minutos13 * ((imposto / shiftTime) / 60)">keyboard_arrow_down</mat-icon>
+        <p class="text-vermelho" *ngIf="realizadoHora.horas12 < minutos13 * ((imposto / shiftTime) / 60)">-{{((minutos13
+          * ((imposto / shiftTime) / 60) - realizadoHora.horas12) / (minutos13 * ((imposto / shiftTime) /
+          60)) * 100).toFixed(0)}}%</p>
+        13
+      </td>
+
+      <td class="horas">
+        <mat-icon *ngIf="realizadoHora.horas13 > minutos14 * ((imposto / shiftTime) / 60)">keyboard_arrow_up</mat-icon>
+        <p class="text-verde" *ngIf="realizadoHora.horas13 > minutos14 * ((imposto / shiftTime) / 60)">
+          +{{((realizadoHora.horas13 - minutos14 * ((imposto / shiftTime) / 60)) / (minutos14 * ((imposto / shiftTime) /
+          60)) * 100).toFixed(0)}}%</p>
+        <mat-icon
+          *ngIf="realizadoHora.horas13 < minutos14 * ((imposto / shiftTime) / 60)">keyboard_arrow_down</mat-icon>
+        <p class="text-vermelho" *ngIf="realizadoHora.horas13 < minutos14 * ((imposto / shiftTime) / 60)">-{{((minutos14
+          * ((imposto / shiftTime) / 60) - realizadoHora.horas13) / (minutos14 * ((imposto / shiftTime) /
+          60)) * 100).toFixed(0)}}%</p>
+        14
+      </td>
+
+      <td class="horas">
+        <mat-icon *ngIf="realizadoHora.horas14 > minutos15 * ((imposto / shiftTime) / 60)">keyboard_arrow_up</mat-icon>
+        <p class="text-verde" *ngIf="realizadoHora.horas14 > minutos15 * ((imposto / shiftTime) / 60)">
+          +{{((realizadoHora.horas14 - minutos15 * ((imposto / shiftTime) / 60)) / (minutos15 * ((imposto / shiftTime) /
+          60)) * 100).toFixed(0)}}%</p>
+        <mat-icon
+          *ngIf="realizadoHora.horas14 < minutos15 * ((imposto / shiftTime) / 60)">keyboard_arrow_down</mat-icon>
+        <p class="text-vermelho" *ngIf="realizadoHora.horas14 < minutos15 * ((imposto / shiftTime) / 60)">-{{((minutos15
+          * ((imposto / shiftTime) / 60) - realizadoHora.horas14) / (minutos15 * ((imposto / shiftTime) /
+          60)) * 100).toFixed(0)}}%</p>
+        15
+      </td>
+
+      <td class="horas">
+        <mat-icon *ngIf="realizadoHora.horas15 > minutos16 * ((imposto / shiftTime) / 60)">keyboard_arrow_up</mat-icon>
+        <p class="text-verde" *ngIf="realizadoHora.horas15 > minutos16 * ((imposto / shiftTime) / 60)">
+          +{{((realizadoHora.horas15 - minutos16 * ((imposto / shiftTime) / 60)) / (minutos16 * ((imposto / shiftTime) /
+          60)) * 100).toFixed(0)}}</p>
+        <mat-icon
+          *ngIf="realizadoHora.horas15 < minutos16 * ((imposto / shiftTime) / 60)">keyboard_arrow_down</mat-icon>
+        <p class="text-vermelho" *ngIf="realizadoHora.horas15 < minutos16 * ((imposto / shiftTime) / 60)">-{{((minutos16
+          * ((imposto / shiftTime) / 60) - realizadoHora.horas15) / (minutos16 * ((imposto / shiftTime) /
+          60)) * 100).toFixed(0)}}%</p>
+        16
+      </td>
+
+      <td class="horas">
+        <mat-icon *ngIf="realizadoHora.horas16 > minutos17 * ((imposto / shiftTime) / 60)">keyboard_arrow_up</mat-icon>
+        <p class="text-verde" *ngIf="realizadoHora.horas16 > minutos17 * ((imposto / shiftTime) / 60)">
+          +{{((realizadoHora.horas16 - minutos17 * ((imposto / shiftTime) / 60)) / (minutos17 * ((imposto / shiftTime) /
+          60)) * 100).toFixed(0)}}</p>
+        <mat-icon
+          *ngIf="realizadoHora.horas16 < minutos17 * ((imposto / shiftTime) / 60)">keyboard_arrow_down</mat-icon>
+        <p class="text-vermelho" *ngIf="realizadoHora.horas16 < minutos17 * ((imposto / shiftTime) / 60)">-{{((minutos17
+          * ((imposto / shiftTime) / 60) - realizadoHora.horas16) / (minutos17 * ((imposto / shiftTime) /
+          60)) * 100).toFixed(0)}}%</p>
+        17
+      </td>
+    </tr>
+    <tr>
+      <th>Realizado</th>
+      <td [ngStyle]="{
+          'background-color': realizadoHora.horas7 >= minutos8 * (imposto / shiftTime / 60)  ? '#00FF00' : 'red'
+        }">{{realizadoHora.horas7}}</td>
+      <td [ngStyle]="{
+          'background-color': realizadoHora.horas8 >= minutos9 * (imposto / shiftTime / 60)  ? '#00FF00' : 'red'
+        }">{{realizadoHora.horas8}}</td>
+      <td [ngStyle]="{
+          'background-color': realizadoHora.horas9 >= minutos10 * (imposto / shiftTime / 60)  ? '#00FF00' : 'red'
+        }">{{realizadoHora.horas9}}</td>
+      <td [ngStyle]="{
+          'background-color': realizadoHora.horas10 >= minutos11 * (imposto / shiftTime / 60)  ? '#00FF00' : 'red'
+        }">{{realizadoHora.horas10}}</td>
+      <td [ngStyle]="{
+          'background-color': realizadoHora.horas11 >= minutos12 * (imposto / shiftTime / 60)  ? '#00FF00' : 'red'
+        }">{{realizadoHora.horas11}}</td>
+      <td [ngStyle]="{
+          'background-color': realizadoHora.horas12 >= minutos13 * (imposto / shiftTime / 60) ? '#00FF00' : 'red'
+        }">{{realizadoHora.horas12}}</td>
+      <td [ngStyle]="{
+          'background-color': realizadoHora.horas13 >= minutos14 * (imposto / shiftTime / 60) ? '#00FF00' : 'red'
+        }">{{realizadoHora.horas13}}</td>
+      <td [ngStyle]="{
+          'background-color': realizadoHora.horas14 >= minutos15 * (imposto / shiftTime / 60) ? '#00FF00' : 'red'
+        }">{{realizadoHora.horas14}}</td>
+      <td [ngStyle]="{
+          'background-color': realizadoHora.horas15 >= minutos16 * (imposto / shiftTime / 60) ? '#00FF00' : 'red'
+        }">{{realizadoHora.horas15}}</td>
+      <td [ngStyle]="{
+          'background-color': realizadoHora.horas16 >= minutos17 * (imposto / shiftTime / 60) ? '#00FF00' : 'red'
+        }">{{realizadoHora.horas16}}</td>
+    </tr>
+  </table>
+</section>
