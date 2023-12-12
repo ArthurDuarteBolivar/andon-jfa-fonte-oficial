@@ -1,0 +1,20 @@
+<section (click)="enterFullscreen()">
+    <div class="info">      
+        <div>
+            <h1>REALIZADO: {{count}}</h1> 
+            <h1>OPERAÇÃO: {{operation.name}} F</h1>
+            <h1 [ngStyle]="{
+                'color': contador < lmitedTime ? '#00FF00':  (contador > lmitedTime && contador < lmitedTime * 3 ? '#5ac5e9' : 'red')
+              }">TEMPO: {{contador}}s</h1>
+        </div>
+    </div>
+    <div class="actions">
+        <button (click)="toggleContagem('count')" *ngIf="stateButton == false">TERMINAR</button>
+        <button (click)="toggleContagem('count')" *ngIf="stateButton">INICIAR</button>
+        <button [disabled]="stateButton" (click)="toggleContagem('refuse')">REFUGO</button>
+        <button (click)="openDialog()">TUTORIAL</button>
+    </div>
+    <!-- <div (click)="openDialog()" class="help">
+        <h1><mat-icon>help_outline</mat-icon>TUTORIAL</h1>
+    </div> -->
+</section>
