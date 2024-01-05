@@ -45,4 +45,8 @@ export class OperationService {
   atualizarState(name: string, state: string){
     this.http.get("http://172.16.34.147:8090/api/v1/nodemcu/atualizarState/" + name + "/" + state).subscribe();
   }
+
+  getVideos(): Observable<string[]> {
+    return this.http.get<string[]>("C:\andon-jfa-project-finish\website-tablet\src\assets\OP10");
+  }
 }

@@ -13,6 +13,7 @@ C:\andon-jfa-project-finish\spring-boot-api-nodemcu-jwt-token\src\main\java\com\
 C:\andon-jfa-project-finish\spring-boot-api-nodemcu-jwt-token\src\main\java\com\api\nodemcu\repository\NodemcuRepository.java
 C:\andon-jfa-project-finish\spring-boot-api-nodemcu-jwt-token\src\main\java\com\api\nodemcu\controllers\MainController.java
 C:\andon-jfa-project-finish\spring-boot-api-nodemcu-jwt-token\src\main\java\com\api\nodemcu\configs\WebMvcConfig.java
+C:\andon-jfa-project-finish\spring-boot-api-nodemcu-jwt-token\src\main\java\com\api\nodemcu\controllers\FontesController.java
 C:\andon-jfa-project-finish\spring-boot-api-nodemcu-jwt-token\src\main\java\com\api\nodemcu\model\MainModel.java
 C:\andon-jfa-project-finish\spring-boot-api-nodemcu-jwt-token\src\main\java\com\api\nodemcu\Service\NodemcuService.java
 C:\andon-jfa-project-finish\spring-boot-api-nodemcu-jwt-token\src\main\java\com\api\nodemcu\repository\FontesRepository.java

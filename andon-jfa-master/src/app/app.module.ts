@@ -11,6 +11,11 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import { DECIMAL_FORMAT_DEFAULT } from 'src/decimal-format.provider';
 import {MatBadgeModule} from '@angular/material/badge';
 import {MatIconModule} from '@angular/material/icon';
+import {MatSelectModule} from '@angular/material/select';
+import { FormsModule } from '@angular/forms';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {ReactiveFormsModule} from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -26,7 +31,12 @@ import {MatIconModule} from '@angular/material/icon';
     MatButtonModule,
     MatProgressSpinnerModule,
     MatBadgeModule,
-    MatIconModule
+    MatIconModule,
+    MatSelectModule,
+    FormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    ReactiveFormsModule
   ],
   providers: [DECIMAL_FORMAT_DEFAULT ],
   bootstrap: [AppComponent]

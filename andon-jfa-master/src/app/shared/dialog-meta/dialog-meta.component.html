@@ -5,15 +5,25 @@
   <div class="input_value">
     <div>
       <p>Meta</p>
-      <input #input type="number">
+      <mat-form-field>
+        <mat-label>Digite a meta</mat-label>
+        <input matInput [formControl]="input">
+      </mat-form-field>
     </div>
     <div>
-      <p>Tempo</p>
-      <input #date type="number">
+      <p>Fonte</p>
+      <mat-form-field>
+        <mat-label>Selecione uma fonte</mat-label>
+        <mat-select >
+          <mat-option *ngFor="let item of modelos" [value]="item.modelo" (click)="changeIsCurrent(item)">
+            {{ item.modelo }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
     </div>
   </div>
     <mat-dialog-actions align="end">
         <button  mat-button mat-dialog-close>Cancel</button>
-        <button mat-raised-button color="warn" [mat-dialog-close]="input.value +',' + date.value" cdkFocusInitial>ok</button>
+        <button mat-raised-button color="warn" [mat-dialog-close]="input.value +',' + 0" cdkFocusInitial>ok</button>
       </mat-dialog-actions>
 </section>

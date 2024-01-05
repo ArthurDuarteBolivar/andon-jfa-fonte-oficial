@@ -138,8 +138,11 @@ public class NodemcuController {
 
     @GetMapping("/atualizarState/{name}/{state}")
     public void atualizarCor(@PathVariable("name") String name, @PathVariable("state") String state) {
+
         OperationModel operation = operationRepository.findByName(name);
-        repository.updateStateByNameId(state, operation.getId());
+        NodemcuModel device = repository.findByNameId(operation);
+        device.setState(state);
+        repository.save(device);
     }
 
 

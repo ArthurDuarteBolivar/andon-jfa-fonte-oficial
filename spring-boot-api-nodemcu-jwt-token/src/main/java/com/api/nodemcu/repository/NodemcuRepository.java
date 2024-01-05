@@ -23,9 +23,6 @@ public interface NodemcuRepository extends JpaRepository<NodemcuModel, Integer> 
     @Query(value = "UPDATE thdados n SET n.localTC = :newLocalTC WHERE n.nameId = :nameId", nativeQuery = true)
     void updateLocalTCByNameId(@Param("newLocalTC") Integer newLocalTC, @Param("nameId") Integer nameId);
 
-    @Modifying
-    @Query("update thdados set state = :newState where nameId = :nameId", nativeQuery = true)
-    void updateStateByNameId(@Param("newState") String newState, @Param("nameId") Integer nameId)
 
     <NodemcuMod extends NodemcuModel> NodemcuMod save(NodemcuMod nodemcu);
 

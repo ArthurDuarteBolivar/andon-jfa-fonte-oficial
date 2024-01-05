@@ -1,3 +1,4 @@
+com\api\nodemcu\controllers\FontesController.class
 com\api\nodemcu\repository\FontesRepository.class
 com\api\nodemcu\Service\NodemcuService.class
 com\api\nodemcu\controllers\NodemcuController.class

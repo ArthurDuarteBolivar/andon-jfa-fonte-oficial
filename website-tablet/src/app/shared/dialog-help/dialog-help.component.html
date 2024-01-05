@@ -17,19 +17,16 @@
         </iframe>
       </mat-expansion-panel>
     </mat-accordion> -->
-    <mat-accordion>
+    <mat-accordion *ngFor="let item of data; let i = index">
       <mat-expansion-panel>
         <mat-expansion-panel-header>
           <mat-panel-title>
-            video
+            {{title[i]}}
           </mat-panel-title>
           <mat-panel-description>
           </mat-panel-description>
         </mat-expansion-panel-header>
-        <video controls>
-          <source [src]="videoUrl" type="video/mp4">
-          Seu navegador não suporta a reprodução de vídeo.
-        </video>
+        <iframe width="560" height="315" [src]="item" title="YouTube video player" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>      
       </mat-expansion-panel>
     </mat-accordion>
   </mat-dialog-content>

@@ -8,8 +8,10 @@ import { delay } from 'rxjs';
 import { Main } from 'src/app/model/main';
 import { Nodemcu } from 'src/app/model/nodemcu';
 import { Operation } from 'src/app/model/operation/operation';
+import { GoogleApiService } from 'src/app/service/google-api.service';
 import { OperationService } from 'src/app/service/operation.service';
 import { SheetsService } from 'src/app/service/sheets.service';
+import { WebsocketService } from 'src/app/service/websocket.service';
 import { DialogHelpComponent } from 'src/app/shared/dialog-help/dialog-help.component';
 
 @Component({
@@ -24,8 +26,10 @@ export class CounterComponent implements OnInit, OnDestroy {
     private _snackBar: MatSnackBar,
     public dialog: MatDialog,
     private sheetsService: SheetsService,
-    private router: Router
-  ) {}
+    private router: Router,
+    private webSocketService: WebsocketService,
+    // private location: Location
+  ) { }
 
   currentState: string = ""
   azulStateCalled: boolean = false;
@@ -56,8 +60,17 @@ export class CounterComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.route.params.subscribe((params) => {
       this.nomeOperacao = params['name'];
-      this.operationService.get(params['name']).subscribe((res) => {  
-        if(res == null){
+      // this.webSocketService.connect("ws://172.16.34.147:9002")
+      setTimeout(() => {
+        // this.webSocketService.sendMessage(this.nomeOperacao)
+        if(new Date().getHours() >= 7 && new Date().getMinutes() >= 0 && new Date().getMinutes() <= 10){
+          if(this.count > 30){
+            this.router.navigate(['/conter/' + this.nomeOperacao]);
+          }
+        }
+      }, 1000)
+      this.operationService.get(params['name']).subscribe((res) => {
+        if (res == null) {
           this.router.navigate([`http://172.16.34.147:4200/counter/${this.nomeOperacao}`])
         }
         this.operation = res;
@@ -72,8 +85,8 @@ export class CounterComponent implements OnInit, OnDestroy {
               this.storage.setItem('operation', this.operation.name);
               this.storage.setItem('counter', '0');
               this.storage.setItem('maintenance', '0');
-            }else{
-              if(newOperation != this.operation.name){
+            } else {
+              if (newOperation != this.operation.name) {
                 this.storage.setItem('operation', this.operation.name);
                 this.storage.setItem('counter', '0');
                 this.storage.setItem('maintenance', '0');
@@ -321,8 +334,42 @@ export class CounterComponent implements OnInit, OnDestroy {
   }
 
   openDialog() {
+    var data: string[] = []
+    if (this.operation.name == "010") {
+      var data = ["https://www.youtube.com/embed/BvXm18IAZIQ?si=2tt4rxf8jbv1SCdv", "https://www.youtube.com/embed/15CDvcsOVhY?si=8TvCGIziEAt8ZMON", "https://www.youtube.com/embed/Gyapq5Icndo?si=SQuMWdi_pBIxFe5V"]
+    } else if (this.operation.name == "020") {
+      var data = ["https://www.youtube.com/embed/5FH1rWUJ2iU?si=c9rfbgYcfv6Mh1S5", "https://www.youtube.com/embed/3SQ7AKfPJ7I?si=jgAWsKbv2SOCZEU4"]
+    } else if (this.operation.name == "030") {
+      var data = ["https://www.youtube.com/embed/IZOz-y7xibc?si=J8FZGVW_W74TVctB","https://www.youtube.com/embed/N8ou3pIdwSs?si=V3dnb2pQKx0PKLiX", "https://www.youtube.com/embed/Q3xioyloBxM?si=s5q9qRCbkat7cTae", "https://www.youtube.com/embed/rDjy7VIXe9g?si=91BzlrgXiDj8uCgp", "https://www.youtube.com/embed/Sp2orVH2L7k?si=uqaMMZ4TNWz3AhkQ"]
+    } else if(this.operation.name == "040"){
+      var data = ["https://www.youtube.com/embed/9Ae5H33H76g?si=A7ro3t5KbGaW3Cgf", "https://www.youtube.com/embed/7fhVvdY_99I?si=gzY53wY1j3HSMoJY", "https://www.youtube.com/embed/lCPotFAG5VA?si=DiOkblulgCtaq_2R", "https://www.youtube.com/embed/oH-J-eqGKxk?si=tTvJQzVpu5Zl9l6o", "https://www.youtube.com/embed/MiwZtbyHows?si=Gva5UwPeddCGngWI", "https://www.youtube.com/embed/j8A9RCK_b18?si=ApMSwvEWfUhOooNJ"]
+    }else if(this.operation.name == "050"){
+      var data = ["https://www.youtube.com/embed/0e_6fwhztNg?si=lBh76eIxuNm9RApi", "https://www.youtube.com/embed/rkz4FRKadCg?si=8IWpIZS7VemIWqQ7", "https://youtu.be/xkF0Ou4RLTA"]
+    }else if(this.operation.name == "060"){
+      var data = ["https://www.youtube.com/embed/pEL38XOYGmM?si=dllUgPDhRcYKLqAA","https://www.youtube.com/embed/pHKs3Ku1vTA","https://www.youtube.com/embed/dwkcDlDKMD8", "https://www.youtube.com/embed/dwkcDlDKMD8",'https://www.youtube.com/embed/oKDGvy9P1QQ',"https://www.youtube.com/embed/3kjdZu2-rCw", "https://www.youtube.com/embed/WRTnK3HVdzc" ]
+    }else if(this.operation.name == "070"){
+      var data = ["https://www.youtube.com/embed/h8qRJuvlXvw","https://www.youtube.com/embed/ghIo5CdV23Y" ,"https://www.youtube.com/embed/Xyj-ggn7wbI", "https://www.youtube.com/embed/uUonDbVf05g" , "https://www.youtube.com/embed/h8qRJuvlXvw"]
+    }else if(this.operation.name == "080"){
+      var data = [""]
+    }else if(this.operation.name == "090"){
+      var data = [""]
+    }else if(this.operation.name == "100"){
+      var data = [""]
+    }else if(this.operation.name == "110"){
+      var data = [""]
+    }else if(this.operation.name == "120"){
+      var data = ["https://www.youtube.com/embed/vfHB-FDG44g" , "https://www.youtube.com/embed/V-RYV4kToIo" , "https://www.youtube.com/embed/uCK7PgbiIkE"]
+    }else if(this.operation.name == "130"){
+      var data = ["https://www.youtube.com/embed/wZbMxJsF0g0", "https://www.youtube.com/embed/ure4crglQaQ" ]
+    }else if(this.operation.name == "140"){
+      var data = ["https://www.youtube.com/embed/mxkWrsilmK8", "https://www.youtube.com/embed/NyIWe5pAYqY"]
+    }else if(this.operation.name == "150"){
+      var data = ["https://www.youtube.com/embed/J4mZHMUEJj8" , "https://www.youtube.com/embed/iJD48h1r0tE", "https://www.youtube.com/embed/KhszgRqs5UQ"]
+    }else if(this.operation.name == "160"){
+      var data = ["https://www.youtube.com/embed/kzmR2EyHGLs"]
+    }
     const dialogRef = this.dialog.open(DialogHelpComponent, {
-      data: this.operation.name,
+      data: data,
     });
   }
 }

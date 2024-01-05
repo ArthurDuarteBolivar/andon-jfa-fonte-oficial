@@ -5,6 +5,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { DialogMetaComponent } from './shared/dialog-meta/dialog-meta.component';
 import { MainService } from './service/main.service';
 import { Realizado } from './module/realizado';
+import { ModeloService } from './service/modelo.service';
+import { Modelo } from './module/modelo';
 
 @Component({
   selector: 'app-root',
@@ -15,10 +17,12 @@ export class AppComponent implements OnInit {
   constructor(
     private nodemcuService: NodemcuService,
     public dialog: MatDialog,
-    private mainService: MainService
-  ) {}
+    private mainService: MainService,
+    private modeloService: ModeloService
+  ) { }
 
 
+  modeloAtual!: Modelo;
   diaDaSemanda: Date = new Date();
   dataGraph: any[] = [];
   countGraph: number[] = [];
@@ -65,6 +69,13 @@ export class AppComponent implements OnInit {
   impostodivididoporshift: any = 0;
   realizado7 = 0
   ngOnInit(): void {
+    this.modeloService.getAll().subscribe(res => {
+      res.forEach(item => {
+        if (item.is_current == true) {
+          this.modeloAtual = item
+        }
+      })
+    })
     window.onload = () => {
       this.init = true;
     };
@@ -82,7 +93,7 @@ export class AppComponent implements OnInit {
       this.realizadoHora = res[0];
     });
     setInterval(() => {
-      this.impostodivididoporshift = ((this.imposto / this.shiftTime) / 60).toFixed(1)
+      this.impostodivididoporshift = ((this.imposto / this.shiftTime) / 60)
       this.diaDaSemanda = new Date();
       this.horasAtuais = new Date().getHours();
       if (this.horasAtuais == 7) {
@@ -164,7 +175,6 @@ export class AppComponent implements OnInit {
         this.minutos17 = new Date().getMinutes();
       }
 
-      console.log((this.minutos8 * (this.imposto / this.shiftTime / 60)))
 
       const currentDate = new Date();
       const newDatehours = new Date(currentDate.getTime() - 7 * 60 * 60 * 1000);
@@ -196,6 +206,13 @@ export class AppComponent implements OnInit {
       this.mainService.getAllMain().subscribe((res) => {
         this.imposto = res[0].imposto;
       });
+      this.modeloService.getAll().subscribe(res => {
+        res.forEach(item => {
+          if (item.is_current == true) {
+            this.modeloAtual = item
+          }
+        })
+      })
     }, 5000);
   }
 
@@ -227,11 +244,10 @@ export class AppComponent implements OnInit {
       this.ProportionalDiscount =
         this.ProportionalDiscount + 10 / (this.TCimpostado / 60);
     }
-    console.log(this.shiftTime)
     this.TCimpostado = 3600 / (this.imposto / this.shiftTime);
 
 
-    this.previsto = 
+    this.previsto =
       this.date / (this.TCimpostado / 60) - this.ProportionalDiscount;
   }
 
@@ -240,18 +256,22 @@ export class AppComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.imposto = result.split(',')[0];
+        var newImposto = result.split(',')[0];
+        console.log(newImposto)
+        if (newImposto != 0 ) {
+          this.imposto = result.split(',')[0];
+          this.mainService
+            .put(this.imposto, this.TCimpostado, this.shiftTime)
+            .subscribe();
+        }
         this.shiftTime = result.split(',')[1];
         if (this.shiftTime == 0) {
           this.shiftTime = 8.66;
-          if(this.diaDaSemanda.getDay() == 5){
+          if (this.diaDaSemanda.getDay() == 5) {
             this.shiftTime = 7.66
           }
           this.getValues();
         }
-        this.mainService
-          .put(this.imposto, this.TCimpostado, this.shiftTime)
-          .subscribe();
       }
     });
   }

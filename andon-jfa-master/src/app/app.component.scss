@@ -103,21 +103,31 @@ section {
   height: 100%;
   h1:nth-child(1){
     font-size: 3rem;
-    margin-top: 16px;
+    margin: 0;
+    margin-top: 10px;
+    margin-bottom: 10px;
   }
 
   h1:nth-child(2){
-    margin-bottom: 0.7rem;
-    margin-top: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
     background-color: #00ff00;
     width: 90%;
     height: 100px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 3rem;
+    font-size: 2rem;
     color: black;
     font-weight: 800;
+    span{
+      font-size: 1.3rem;
+      margin: 0;
+      text-transform: uppercase;
+    }
   }
 }
 .div4 {
