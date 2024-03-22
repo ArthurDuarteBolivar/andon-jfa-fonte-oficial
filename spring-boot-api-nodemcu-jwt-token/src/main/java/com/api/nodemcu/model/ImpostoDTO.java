@@ -4,10 +4,10 @@ import lombok.Data;
 
 @Data
 public class ImpostoDTO {
-    private Integer imposto;
+    private Float imposto;
 
-    private Integer TCimposto;
+    private Float TCimposto;
 
-    private Integer shiftTime;
+    private Float shiftTime;
 
 }

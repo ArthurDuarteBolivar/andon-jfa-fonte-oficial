@@ -7,10 +7,13 @@ com\api\nodemcu\repository\RealizadoHorariaRepository.class
 com\api\nodemcu\controllers\MainController.class
 com\api\nodemcu\model\FontesModel.class
 com\api\nodemcu\model\RealizadoHorariaModel.class
+com\api\nodemcu\controllers\RealizadoHorariaTabletController.class
 com\api\nodemcu\model\OperationModel.class
 com\api\nodemcu\repository\NodemcuRepository.class
+com\api\nodemcu\repository\RealizadoHorariaTabletRepository.class
 com\api\nodemcu\controllers\OperationController.class
 com\api\nodemcu\model\NodemcuModel.class
+com\api\nodemcu\model\RealizadoHorariaTabletModel.class
 com\api\nodemcu\controllers\RealizadoHorariaController.class
 com\api\nodemcu\model\MainModel.class
 com\api\nodemcu\NodemcuApplication.class

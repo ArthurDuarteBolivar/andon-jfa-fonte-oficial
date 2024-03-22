@@ -28,6 +28,7 @@ export class DialogMetaComponent implements OnInit {
         this.modeloService.changeIsCurrent(item.modelo, false) 
       }
     })
+    console.log(modelo)
     this.modeloService.changeIsCurrent(modelo.modelo, true)
   }
 

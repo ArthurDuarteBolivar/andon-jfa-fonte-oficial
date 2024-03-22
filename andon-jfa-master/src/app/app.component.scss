@@ -174,3 +174,30 @@ mat-spinner{
 .text-verde{
   color: #00ff00;
 }
+
+.unica-1 {
+  position: relative; /* Necessário para que a sombra fique dentro do elemento */
+}
+
+.unica-1::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 101%;
+  height: 10px; /* Define a espessura do traço */
+  background-color: yellow; /* Define a cor do traço */
+}
+.unica-2 {
+  position: relative; /* Necessário para que a sombra fique dentro do elemento */
+}
+
+.unica-2::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 101%;
+  height: 10px; /* Define a espessura do traço */
+  background-color: rgb(132, 0, 255); /* Define a cor do traço */
+}

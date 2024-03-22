@@ -8,10 +8,9 @@ import { delay } from 'rxjs';
 import { Main } from 'src/app/model/main';
 import { Nodemcu } from 'src/app/model/nodemcu';
 import { Operation } from 'src/app/model/operation/operation';
-import { GoogleApiService } from 'src/app/service/google-api.service';
+import { Realizado } from 'src/app/model/realizado';
 import { OperationService } from 'src/app/service/operation.service';
 import { SheetsService } from 'src/app/service/sheets.service';
-import { WebsocketService } from 'src/app/service/websocket.service';
 import { DialogHelpComponent } from 'src/app/shared/dialog-help/dialog-help.component';
 
 @Component({
@@ -26,17 +25,28 @@ export class CounterComponent implements OnInit, OnDestroy {
     private _snackBar: MatSnackBar,
     public dialog: MatDialog,
     private sheetsService: SheetsService,
-    private router: Router,
-    private webSocketService: WebsocketService,
-    // private location: Location
-  ) { }
-
+    private router: Router
+    ) { }
+  imposto: number = 0;
+  shiftTime: number = 8.66;
+  minutos8: number = 0;
+  minutos9: number = 0;
+  minutos10: number = 0;
+  minutos11: number = 0;
+  minutos12: number = 0;
+  minutos13: number = 0;
+  minutos14: number = 0;
+  minutos15: number = 0;
+  minutos16: number = 0;
+  minutos17: number = 0;
+  realizadoHora!: Realizado;
+  realizadoHoraAtual : number = 0;
   currentState: string = ""
   azulStateCalled: boolean = false;
   vermelhoStateCalled: boolean = false;
   verificarSeFoiUmaVez: boolean = true;
   localData: Date | undefined;
-  intervalo: NodeJS.Timer | undefined;
+  intervalo!: NodeJS.Timer
   tempoOcioso: number = 0;
   stateButton: boolean = true;
   contadorRodando: boolean = false;
@@ -60,15 +70,6 @@ export class CounterComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.route.params.subscribe((params) => {
       this.nomeOperacao = params['name'];
-      // this.webSocketService.connect("ws://172.16.34.147:9002")
-      setTimeout(() => {
-        // this.webSocketService.sendMessage(this.nomeOperacao)
-        if(new Date().getHours() >= 7 && new Date().getMinutes() >= 0 && new Date().getMinutes() <= 10){
-          if(this.count > 30){
-            this.router.navigate(['/conter/' + this.nomeOperacao]);
-          }
-        }
-      }, 1000)
       this.operationService.get(params['name']).subscribe((res) => {
         if (res == null) {
           this.router.navigate([`http://172.16.34.147:4200/counter/${this.nomeOperacao}`])
@@ -102,10 +103,12 @@ export class CounterComponent implements OnInit, OnDestroy {
       }, (errr) => {
         this.router.navigate([`http://172.16.34.147:4200/counter/${this.nomeOperacao}`])
       })
+      this.operationService.getRealizadoHoraria(`${this.nomeOperacao}`).subscribe((res: any) => {
+        this.realizadoHora = res;
+      })
     }, (errr) => {
       this.router.navigate([`http://172.16.34.147:4200/counter/${this.nomeOperacao}`])
     });
-    console.log()
     this.operationService.getTCimposto().subscribe(
       (res: Main[]) => {
         res.forEach((res) => {
@@ -152,6 +155,128 @@ export class CounterComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.intervaloCounter();
     }, 1000);
+    this.operationService.getTCimposto().subscribe((res: Main[]) => {
+      this.imposto = res[0].imposto
+      this.shiftTime = res[0].shiftTime
+    })
+    setInterval(() => {
+      this.operationService.getRealizadoHoraria(`${this.nomeOperacao}`).subscribe((res: any) => {
+        this.count = 0;
+        this.realizadoHora = res;
+        this.count += res.horas7;
+        this.count += res.horas8;
+        this.count += res.horas9;
+        this.count += res.horas10;
+        this.count += res.horas11;
+        this.count += res.horas12;
+        this.count += res.horas13;
+        this.count += res.horas14;
+        this.count += res.horas15;
+        this.count += res.horas16;
+        this.count += res.horas17;
+        var horas = new Date().getHours()
+        if(horas == 7){
+          this.realizadoHoraAtual = this.realizadoHora.horas7;
+        }else if(horas == 8){
+          this.realizadoHoraAtual = this.realizadoHora.horas8;
+        }else if(horas == 9){
+          this.realizadoHoraAtual = this.realizadoHora.horas9;
+        }else if(horas == 10){
+          this.realizadoHoraAtual = this.realizadoHora.horas10;
+        }else if(horas == 11){
+          this.realizadoHoraAtual = this.realizadoHora.horas11;
+        }else if(horas == 12){
+          this.realizadoHoraAtual = this.realizadoHora.horas12;
+        }else if(horas == 13){
+          this.realizadoHoraAtual = this.realizadoHora.horas13;
+        }else if(horas == 14){
+          this.realizadoHoraAtual = this.realizadoHora.horas14;
+        }else if(horas == 15){
+          this.realizadoHoraAtual = this.realizadoHora.horas15;
+        }else if(horas == 16){
+          this.realizadoHoraAtual = this.realizadoHora.horas16;
+        }
+      })
+      var horas = new Date().getHours()
+      if (horas == 7) {
+        this.minutos8 = new Date().getMinutes();
+      } else if (horas == 8) {
+        this.minutos8 = 60;
+        this.minutos9 = new Date().getMinutes();
+      } else if (horas == 9) {
+        this.minutos8 = 60;
+        this.minutos9 = 60;
+        this.minutos10 = new Date().getMinutes();
+      } else if (horas == 10) {
+        this.minutos8 = 60;
+        this.minutos9 = 60;
+        this.minutos10 = 60;
+        this.minutos11 = new Date().getMinutes();
+      } else if (horas == 11) {
+        this.minutos8 = 60;
+        this.minutos9 = 60;
+        this.minutos10 = 60;
+        this.minutos11 = 60;
+        this.minutos12 = new Date().getMinutes();
+      } else if (horas == 12) {
+        this.minutos8 = 60;
+        this.minutos9 = 60;
+        this.minutos10 = 60;
+        this.minutos11 = 60;
+        this.minutos12 = 60;
+        this.minutos13 = new Date().getMinutes();
+      } else if (horas == 13) {
+        this.minutos8 = 60;
+        this.minutos9 = 60;
+        this.minutos10 = 60;
+        this.minutos11 = 60;
+        this.minutos12 = 60;
+        this.minutos13 = 60;
+        this.minutos14 = new Date().getMinutes();
+      } else if (horas == 14) {
+        this.minutos8 = 60;
+        this.minutos9 = 60;
+        this.minutos10 = 60;
+        this.minutos11 = 60;
+        this.minutos12 = 60;
+        this.minutos13 = 60;
+        this.minutos14 = 60;
+        this.minutos15 = new Date().getMinutes();
+      } else if (horas == 15) {
+        this.minutos8 = 60;
+        this.minutos9 = 60;
+        this.minutos10 = 60;
+        this.minutos11 = 60;
+        this.minutos12 = 60;
+        this.minutos13 = 60;
+        this.minutos14 = 60;
+        this.minutos15 = 60;
+        this.minutos16 = new Date().getMinutes();
+      } else if (horas == 16) {
+        this.minutos8 = 60;
+        this.minutos9 = 60;
+        this.minutos10 = 60;
+        this.minutos11 = 60;
+        this.minutos12 = 60;
+        this.minutos13 = 60;
+        this.minutos14 = 60;
+        this.minutos15 = 60;
+        this.minutos16 = 60;
+        this.minutos17 = new Date().getMinutes();
+      } else if (horas == 17) {
+        this.minutos8 = 60;
+        this.minutos9 = 60;
+        this.minutos10 = 60;
+        this.minutos11 = 60;
+        this.minutos12 = 60;
+        this.minutos13 = 60;
+        this.minutos14 = 60;
+        this.minutos15 = 60;
+        this.minutos16 = 60;
+        this.minutos17 = 60;
+        this.minutos17 = new Date().getMinutes();
+      }
+    }, 1000)
   }
 
   enterFullscreen() {
@@ -183,7 +308,6 @@ export class CounterComponent implements OnInit, OnDestroy {
       }
     }, 1000);
   }
-
   ngOnDestroy() {
     this.stopTimer('');
   }
@@ -235,13 +359,14 @@ export class CounterComponent implements OnInit, OnDestroy {
 
   stopTimer(state: string) {
     this.operationService.getTCimposto().subscribe((res: Main[]) => {
+      this.imposto = res[0].imposto
+      this.shiftTime = res[0].shiftTime
       this.operationService.atualizar(this.operation.name, this.contador);
       res.forEach((res) => {
         this.lmitedTime = res.tcimposto;
       });
     });
     if (state == 'count') {
-      this.count++;
       this.newConter++;
       this.storage.setItem('counter', this.newConter.toString());
     } else if (state == 'refuse') {
@@ -265,14 +390,7 @@ export class CounterComponent implements OnInit, OnDestroy {
         shortestTC: this.contador,
         modelo: this.labelPosition,
       };
-      this.operationService.post(body).subscribe((res) => {
-        if (res) {
-          this.openSnackBar('Enviado com sucesso', 'Ok');
-        } else {
-          this.count--;
-          this.openSnackBar('Erro ao enviar', 'Ok');
-        }
-      });
+      this.operationService.post(body).subscribe((res) => {});
     } else if (this.contador >= this.lmitedTime * 3) {
       var body: Nodemcu = {
         count: this.count,
@@ -284,14 +402,7 @@ export class CounterComponent implements OnInit, OnDestroy {
         shortestTC: this.contador,
         modelo: this.labelPosition,
       };
-      this.operationService.post(body).subscribe((res) => {
-        if (res) {
-          this.openSnackBar('Enviado com sucesso', 'Ok');
-        } else {
-          this.count--;
-          this.openSnackBar('Erro ao enviar', 'Ok');
-        }
-      });
+      this.operationService.post(body).subscribe((res) => {});
     } else {
       var body: Nodemcu = {
         count: this.count,
@@ -303,14 +414,7 @@ export class CounterComponent implements OnInit, OnDestroy {
         shortestTC: this.contador,
         modelo: this.labelPosition,
       };
-      this.operationService.post(body).subscribe((res) => {
-        if (res) {
-          this.openSnackBar('Enviado com sucesso', 'Ok');
-        } else {
-          this.count--;
-          this.openSnackBar('Erro ao enviar', 'Ok');
-        }
-      });
+      this.operationService.post(body).subscribe((res) => {});
     }
     this.contador = 0; // Reseta o contador para 0 quando a contagem é parada
     this.operationService.atualizar(this.operation.name, 0);
@@ -334,42 +438,8 @@ export class CounterComponent implements OnInit, OnDestroy {
   }
 
   openDialog() {
-    var data: string[] = []
-    if (this.operation.name == "010") {
-      var data = ["https://www.youtube.com/embed/BvXm18IAZIQ?si=2tt4rxf8jbv1SCdv", "https://www.youtube.com/embed/15CDvcsOVhY?si=8TvCGIziEAt8ZMON", "https://www.youtube.com/embed/Gyapq5Icndo?si=SQuMWdi_pBIxFe5V"]
-    } else if (this.operation.name == "020") {
-      var data = ["https://www.youtube.com/embed/5FH1rWUJ2iU?si=c9rfbgYcfv6Mh1S5", "https://www.youtube.com/embed/3SQ7AKfPJ7I?si=jgAWsKbv2SOCZEU4"]
-    } else if (this.operation.name == "030") {
-      var data = ["https://www.youtube.com/embed/IZOz-y7xibc?si=J8FZGVW_W74TVctB","https://www.youtube.com/embed/N8ou3pIdwSs?si=V3dnb2pQKx0PKLiX", "https://www.youtube.com/embed/Q3xioyloBxM?si=s5q9qRCbkat7cTae", "https://www.youtube.com/embed/rDjy7VIXe9g?si=91BzlrgXiDj8uCgp", "https://www.youtube.com/embed/Sp2orVH2L7k?si=uqaMMZ4TNWz3AhkQ"]
-    } else if(this.operation.name == "040"){
-      var data = ["https://www.youtube.com/embed/9Ae5H33H76g?si=A7ro3t5KbGaW3Cgf", "https://www.youtube.com/embed/7fhVvdY_99I?si=gzY53wY1j3HSMoJY", "https://www.youtube.com/embed/lCPotFAG5VA?si=DiOkblulgCtaq_2R", "https://www.youtube.com/embed/oH-J-eqGKxk?si=tTvJQzVpu5Zl9l6o", "https://www.youtube.com/embed/MiwZtbyHows?si=Gva5UwPeddCGngWI", "https://www.youtube.com/embed/j8A9RCK_b18?si=ApMSwvEWfUhOooNJ"]
-    }else if(this.operation.name == "050"){
-      var data = ["https://www.youtube.com/embed/0e_6fwhztNg?si=lBh76eIxuNm9RApi", "https://www.youtube.com/embed/rkz4FRKadCg?si=8IWpIZS7VemIWqQ7", "https://youtu.be/xkF0Ou4RLTA"]
-    }else if(this.operation.name == "060"){
-      var data = ["https://www.youtube.com/embed/pEL38XOYGmM?si=dllUgPDhRcYKLqAA","https://www.youtube.com/embed/pHKs3Ku1vTA","https://www.youtube.com/embed/dwkcDlDKMD8", "https://www.youtube.com/embed/dwkcDlDKMD8",'https://www.youtube.com/embed/oKDGvy9P1QQ',"https://www.youtube.com/embed/3kjdZu2-rCw", "https://www.youtube.com/embed/WRTnK3HVdzc" ]
-    }else if(this.operation.name == "070"){
-      var data = ["https://www.youtube.com/embed/h8qRJuvlXvw","https://www.youtube.com/embed/ghIo5CdV23Y" ,"https://www.youtube.com/embed/Xyj-ggn7wbI", "https://www.youtube.com/embed/uUonDbVf05g" , "https://www.youtube.com/embed/h8qRJuvlXvw"]
-    }else if(this.operation.name == "080"){
-      var data = [""]
-    }else if(this.operation.name == "090"){
-      var data = [""]
-    }else if(this.operation.name == "100"){
-      var data = [""]
-    }else if(this.operation.name == "110"){
-      var data = [""]
-    }else if(this.operation.name == "120"){
-      var data = ["https://www.youtube.com/embed/vfHB-FDG44g" , "https://www.youtube.com/embed/V-RYV4kToIo" , "https://www.youtube.com/embed/uCK7PgbiIkE"]
-    }else if(this.operation.name == "130"){
-      var data = ["https://www.youtube.com/embed/wZbMxJsF0g0", "https://www.youtube.com/embed/ure4crglQaQ" ]
-    }else if(this.operation.name == "140"){
-      var data = ["https://www.youtube.com/embed/mxkWrsilmK8", "https://www.youtube.com/embed/NyIWe5pAYqY"]
-    }else if(this.operation.name == "150"){
-      var data = ["https://www.youtube.com/embed/J4mZHMUEJj8" , "https://www.youtube.com/embed/iJD48h1r0tE", "https://www.youtube.com/embed/KhszgRqs5UQ"]
-    }else if(this.operation.name == "160"){
-      var data = ["https://www.youtube.com/embed/kzmR2EyHGLs"]
-    }
     const dialogRef = this.dialog.open(DialogHelpComponent, {
-      data: data,
+      data: this.operation.name,
     });
   }
 }

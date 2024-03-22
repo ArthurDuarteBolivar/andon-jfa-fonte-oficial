@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { Operation } from '../model/operation/operation';
 import { Nodemcu } from '../model/nodemcu';
 import { Main } from '../model/main';
+import { Realizado } from '../model/realizado';
 
 const headers = new HttpHeaders({
   'Authorization': 'Bearer meu-token-de-autenticacao',
@@ -46,7 +47,8 @@ export class OperationService {
     this.http.get("http://172.16.34.147:8090/api/v1/nodemcu/atualizarState/" + name + "/" + state).subscribe();
   }
 
-  getVideos(): Observable<string[]> {
-    return this.http.get<string[]>("C:\andon-jfa-project-finish\website-tablet\src\assets\OP10");
+  getRealizadoHoraria(name: string): Observable<Realizado>{
+    return this.http.get<Realizado>("http://172.16.34.147:8090/api/v1/realizadoHorariaTablet/" + name)
   }
 }
+

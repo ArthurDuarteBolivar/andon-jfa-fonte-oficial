@@ -13,10 +13,10 @@ public class MainModel {
     @Column(name = "id")
     private int id;
 
-    private Integer imposto;
+    private Float imposto;
 
-    private Integer TCimposto;
+    private Float TCimposto;
 
-    private Integer shiftTime;
+    private Float shiftTime;
 
 }

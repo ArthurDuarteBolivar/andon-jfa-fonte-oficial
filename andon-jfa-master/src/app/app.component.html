@@ -2,7 +2,7 @@
 <section *ngIf="init">
   <div class="div3">
     <h1>FONTE</h1>
-    <h1>PRODUÇÃO<span>{{modeloAtual.modelo}}</span></h1>
+    <h1>PRODUÇÃO<span *ngIf="modeloAtual && modeloAtual.modelo !== ''">{{modeloAtual.modelo}}</span></h1>
   </div>
 
   <div class="div2">
@@ -65,7 +65,7 @@
       <th class="border-th">Operação</th>
       <td *ngFor="let item of nodemcu" [ngStyle]="{
           'background-color': item.state === 'verde' ? '#00FF00':  (item.state === 'azul' ? '#5ac5e9' : 'red')
-        }">
+        }" [ngClass]="{'unica-1': item.nameId.name === '080' || item.nameId.name === '090', 'unica-2': item.nameId.name === '100' || item.nameId.name === '110'}">
         {{ item.nameId.name }}
       </td>
     </tr>

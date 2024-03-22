@@ -4,14 +4,15 @@ import com.api.nodemcu.Services.TimerService;
 import com.api.nodemcu.model.NodemcuModel;
 import com.api.nodemcu.model.OperationModel;
 import com.api.nodemcu.model.RealizadoHorariaModel;
+import com.api.nodemcu.model.RealizadoHorariaTabletModel;
 import com.api.nodemcu.repository.MainRepostory;
 import com.api.nodemcu.repository.NodemcuRepository;
 import com.api.nodemcu.repository.OperationRepository;
 import com.api.nodemcu.repository.RealizadoHorariaRepository;
+import com.api.nodemcu.repository.RealizadoHorariaTabletRepository;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,6 @@ import java.util.function.Consumer;
 @RequestMapping("/api/v1/nodemcu")
 public class NodemcuController {
 
-
     @Autowired
     private NodemcuRepository repository;
 
@@ -43,21 +43,34 @@ public class NodemcuController {
     private RealizadoHorariaRepository realizadoHorariaRepository;
 
     @Autowired
-    private TimerService timerService;
+    private RealizadoHorariaTabletRepository realizadoHorariaTabletRepository;
 
     boolean state = false;
     Integer anterior = 0;
+    boolean isRefugo = false;
+    private boolean tarefaAgendada = false;
 
-    @GetMapping()
-    public List<NodemcuModel> list() {
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
+    private ScheduledExecutorService scheduler;
+
+    public NodemcuController() {
+        System.out.println("passou 1");
+        this.scheduler = Executors.newScheduledThreadPool(1);
+        agendarTarefa();
+    }
+
+    private void agendarTarefa() {
+        System.out.println("passou 2");
         Runnable task = () -> {
             zerarDados(); // Chame a função desejada aqui
         };
 
         // Agende a tarefa para ser executada a cada hora
         scheduler.scheduleAtFixedRate(task, 0, 1, TimeUnit.HOURS);
+    }
+
+    @GetMapping()
+    public List<NodemcuModel> list() {
         return repository.findAll();
     }
 
@@ -68,21 +81,18 @@ public class NodemcuController {
         return nodemcu;
     }
 
-
     @PostMapping()
     public NodemcuModel post(@RequestBody NodemcuModel device) {
         repository.save(device);
         return device;
     }
 
-
-
     @Transactional
     @PatchMapping("/{name}")
-    public NodemcuModel patch(@PathVariable String name, @RequestBody NodemcuModel nodemcuUpdates) throws IOException, InterruptedException {
+    public NodemcuModel patch(@PathVariable String name, @RequestBody NodemcuModel nodemcuUpdates)
+            throws IOException, InterruptedException {
         OperationModel operation = operationRepository.findByName(name);
         NodemcuModel device = repository.findByNameId(operation);
-
 
         if (device == null) {
             repository.save(nodemcuUpdates);
@@ -106,7 +116,17 @@ public class NodemcuController {
         device.setCount(nodemcuUpdates.getCount());
         device.setState(nodemcuUpdates.getState());
         device.setCurrentTC(nodemcuUpdates.getCurrentTC());
-        device.setMaintenance(nodemcuUpdates.getMaintenance());
+        if (device.getMaintenance() != nodemcuUpdates.getMaintenance()) {
+            isRefugo = true;
+            device.setMaintenance(nodemcuUpdates.getMaintenance());
+        } else {
+            isRefugo = false;
+            try {
+                RealizadoHorariaTablet(name);
+            } catch (Exception e) {
+                throw new RuntimeException("Erro ao salvar o dispositivo no banco de dados", e);
+            }
+        }
 
         try {
             NodemcuModel savedDevice = repository.save(device);
@@ -114,37 +134,19 @@ public class NodemcuController {
                 if (Integer.parseInt(nodemcuUpdates.getNameId().getName()) == 160) {
                     RealizadoHoraria();
                 }
-            } else {
-                NodemcuModel newSavedDevice = repository.save(device);
-                if(newSavedDevice != null){
-                    if (Integer.parseInt(nodemcuUpdates.getNameId().getName()) == 160) {
-                        RealizadoHoraria();
-                    }
-                }else {
-                    System.out.println("Erro");
-                    NodemcuModel otherNewSavedDevice = repository.save(device);
-                    if(otherNewSavedDevice != null){
-                        if (Integer.parseInt(nodemcuUpdates.getNameId().getName()) == 160) {
-                            RealizadoHoraria();
-                        }
-                    }
-                }
             }
             return device;
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException("Erro ao salvar o dispositivo no banco de dados", e);
         }
     }
 
+    @Transactional
     @GetMapping("/atualizarState/{name}/{state}")
     public void atualizarCor(@PathVariable("name") String name, @PathVariable("state") String state) {
-
         OperationModel operation = operationRepository.findByName(name);
-        NodemcuModel device = repository.findByNameId(operation);
-        device.setState(state);
-        repository.save(device);
+        repository.updateStateByNameId(state, operation.getId());
     }
-
 
     public void RealizadoHoraria() {
         Date agora = new Date();
@@ -236,30 +238,124 @@ public class NodemcuController {
         device.setCount(realizadoHorariaRepository.somarTudo());
         repository.save(device);
     }
+
+    public void RealizadoHorariaTablet(String name) {
+        Date agora = new Date();
+        SimpleDateFormat formatador = new SimpleDateFormat("HH");
+        Integer horaFormatada = Integer.parseInt(formatador.format(agora));
+        RealizadoHorariaTabletModel realizado = new RealizadoHorariaTabletModel();
+        Integer hour = 0;
+        OperationModel operation = operationRepository.findByName(name);
+        realizado = realizadoHorariaTabletRepository.findByNameId(operation);
+        NodemcuModel device = repository.findByNameId(operation);
+        switch (horaFormatada) {
+            case 7:
+                hour = realizado.getHoras7();
+                hour++;
+                realizado.setHoras7(hour);
+                realizadoHorariaTabletRepository.save(realizado);
+                break;
+
+            case 8:
+                hour = realizado.getHoras8();
+                hour++;
+                realizado.setHoras8(hour);
+                realizadoHorariaTabletRepository.save(realizado);
+                break;
+
+            case 9:
+                hour = realizado.getHoras9();
+                hour++;
+                realizado.setHoras9(hour);
+                realizadoHorariaTabletRepository.save(realizado);
+                break;
+
+            case 10:
+                hour = realizado.getHoras10();
+                hour++;
+                realizado.setHoras10(hour);
+                realizadoHorariaTabletRepository.save(realizado);
+                break;
+
+            case 11:
+                hour = realizado.getHoras11();
+                hour++;
+                realizado.setHoras11(hour);
+                realizadoHorariaTabletRepository.save(realizado);
+                break;
+
+            case 12:
+                hour = realizado.getHoras12();
+                hour++;
+                realizado.setHoras12(hour);
+                realizadoHorariaTabletRepository.save(realizado);
+                break;
+
+            case 13:
+                hour = realizado.getHoras13();
+                hour++;
+                realizado.setHoras13(hour);
+                realizadoHorariaTabletRepository.save(realizado);
+                break;
+
+            case 14:
+                hour = realizado.getHoras14();
+                hour++;
+                realizado.setHoras14(hour);
+                realizadoHorariaTabletRepository.save(realizado);
+                break;
+
+            case 15:
+                hour = realizado.getHoras15();
+                hour++;
+                realizado.setHoras15(hour);
+                realizadoHorariaTabletRepository.save(realizado);
+                break;
+
+            case 16:
+                hour = realizado.getHoras16();
+                hour++;
+                realizado.setHoras16(hour);
+                realizadoHorariaTabletRepository.save(realizado);
+                break;
+
+            case 17:
+                hour = realizado.getHoras17();
+                hour++;
+                realizado.setHoras17(hour);
+                realizadoHorariaTabletRepository.save(realizado);
+                break;
+        }
+        // device.setCount(realizadoHorariaTabletRepository.somarTudo());
+        // repository.save(device);
+    }
+
     @Transactional
     @GetMapping("/atualizarTempo/{name}/{tempo}")
     public void iniciarTempo(@PathVariable("name") String name, @PathVariable("tempo") Integer tempo) {
         OperationModel operation = operationRepository.findByName(name);
-        repository.updateLocalTCByNameId(tempo ,operation.getId());
+        repository.updateLocalTCByNameId(tempo, operation.getId());
     }
 
-//    @GetMapping("/atualizarTempo/{name}/{tempo}")
-//    public void iniciarTempo(@PathVariable("name") String name, @PathVariable("tempo") Integer tempo) {
-//        OperationModel operation = operationRepository.findByName(name);
-//        NodemcuModel device = repository.findByNameId(operation);
-//        if(tempo == 0){
-//            device.setLocalTC(0);
-//            repository.save(device);
-//            return;
-//        }
-//        device.setLocalTC(tempo);
-//        repository.save(device);
-//    }
-
+    // @GetMapping("/atualizarTempo/{name}/{tempo}")
+    // public void iniciarTempo(@PathVariable("name") String name,
+    // @PathVariable("tempo") Integer tempo) {
+    // OperationModel operation = operationRepository.findByName(name);
+    // NodemcuModel device = repository.findByNameId(operation);
+    // if(tempo == 0){
+    // device.setLocalTC(0);
+    // repository.save(device);
+    // return;
+    // }
+    // device.setLocalTC(tempo);
+    // repository.save(device);
+    // }
 
     public void zerarDados() {
+        System.out.println("passou");
         Date date = new Date();
         if (date.getHours() >= 20 && date.getMinutes() >= 50 && date.getHours() <= 21) {
+
             Optional<RealizadoHorariaModel> realizadoReset = realizadoHorariaRepository.findById(1);
             realizadoReset.get().setHoras12(0);
             realizadoReset.get().setHoras11(0);
@@ -305,8 +401,22 @@ public class NodemcuController {
                 nodemcu.get(i).setCount(0);
                 repository.save(nodemcu.get(i));
             }
+            List<RealizadoHorariaTabletModel> realizado = realizadoHorariaTabletRepository.findAll();
+            for (int i = 0; i < realizado.size(); i++) {
+                realizado.get(i).setHoras7(0);
+                realizado.get(i).setHoras8(0);
+                realizado.get(i).setHoras9(0);
+                realizado.get(i).setHoras10(0);
+                realizado.get(i).setHoras11(0);
+                realizado.get(i).setHoras12(0);
+                realizado.get(i).setHoras13(0);
+                realizado.get(i).setHoras14(0);
+                realizado.get(i).setHoras15(0);
+                realizado.get(i).setHoras16(0);
+                realizado.get(i).setHoras17(0);
+                realizadoHorariaTabletRepository.save(realizado.get(i));
+            }
         }
     }
-
 
 }
