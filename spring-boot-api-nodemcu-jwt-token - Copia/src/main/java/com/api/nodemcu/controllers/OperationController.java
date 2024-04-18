@@ -1,6 +1,5 @@
 package com.api.nodemcu.controllers;
 
-import com.api.nodemcu.model.NodemcuModel;
 import com.api.nodemcu.model.OperationModel;
 import com.api.nodemcu.repository.OperationRepository;
 import org.springframework.beans.factory.annotation.Autowired;

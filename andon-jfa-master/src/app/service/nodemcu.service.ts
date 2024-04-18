@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Nodemcu } from '../module/nodemcu';
 import { Observable } from 'rxjs';
 import { Realizado } from '../module/realizado';
+import { ResultadoGeral } from '../module/resultadoGeral';
 
 @Injectable({
   providedIn: 'root',
@@ -19,5 +20,13 @@ export class NodemcuService {
 
   getAllRealizado(): Observable<Realizado[]>{
     return this.http.get<Realizado[]>("http://172.16.34.147:8090/api/v1/realizadoHoraria")
+  }
+
+  postResultsGeral(imposto: number, realizado: number){
+    this.http.post("http://172.16.34.147:8090/api/v1/geral", {'imposto': imposto, 'realizado': realizado}).subscribe()
+  }
+
+  getAllResultadoGeral(): Observable<ResultadoGeral[]>{
+    return this.http.get<ResultadoGeral[]>("http://172.16.34.147:8090/api/v1/geral")
   }
 }

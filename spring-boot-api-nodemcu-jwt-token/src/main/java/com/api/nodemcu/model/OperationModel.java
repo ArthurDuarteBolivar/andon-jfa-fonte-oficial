@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import javax.swing.text.StyledEditorKit.BoldAction;
+
 @Entity
 @Data
 @Table(name="operaion")
@@ -20,6 +22,8 @@ public class OperationModel {
     private String name;
 
     private Integer limitedTime;
+
+    private Boolean ocupado;
 
 
 }

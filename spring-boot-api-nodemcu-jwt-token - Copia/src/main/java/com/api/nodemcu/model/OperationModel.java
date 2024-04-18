@@ -3,10 +3,6 @@ package com.api.nodemcu.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
-
 @Entity
 @Data
 @Table(name="operaion")

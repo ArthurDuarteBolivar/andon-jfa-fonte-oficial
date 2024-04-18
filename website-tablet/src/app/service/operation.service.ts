@@ -50,5 +50,9 @@ export class OperationService {
   getRealizadoHoraria(name: string): Observable<Realizado>{
     return this.http.get<Realizado>("http://172.16.34.147:8090/api/v1/realizadoHorariaTablet/" + name)
   }
+
+  atualizarOcupado(name: string, ocupado: boolean): Observable<Operation>{
+    return this.http.get<Operation>(`http://172.16.34.147:8090/api/v1/operation/${name}/${ocupado}`)
+  }
 }
 

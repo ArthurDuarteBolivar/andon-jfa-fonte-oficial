@@ -1,19 +1,23 @@
+<!-- <input type="text" autofocus class="inputGeral"> -->
 <section (click)="enterFullscreen()">
+  <!-- <span *ngIf="nomeOperador != ''">Nome: {{nomeOperador}}</span> -->
     <div class="info">      
         <div>
             <h1>REALIZADO: {{count}}</h1> 
             <h1>OP: {{operation.name}} F</h1>
             <h1>REALIZADO HR: {{realizadoHoraAtual}}</h1>
+          </div>
+          
+          <h1 [ngStyle]="{
+            'color': contador < lmitedTime ? '#00FF00':  (contador > lmitedTime && contador < lmitedTime * 3 ? '#5ac5e9' : 'red')
+          }">TEMPO: {{contador}}s</h1>
         </div>
-              
-            <h1 [ngStyle]="{
-                'color': contador < lmitedTime ? '#00FF00':  (contador > lmitedTime && contador < lmitedTime * 3 ? '#5ac5e9' : 'red')
-              }">TEMPO: {{contador}}s</h1>
-        </div>
-    
-    <div class="actions">
+        
+        <div class="actions">
         <button (click)="toggleContagem('count')" *ngIf="stateButton == false">TERMINAR</button>
-        <button (click)="toggleContagem('count')" *ngIf="stateButton">INICIAR</button>
+        
+        <button *ngIf="loadingButton" disabled="true">AGUARDE</button>
+        <button (click)="toggleContagem('count')" *ngIf="stateButton && loadingButton == false">INICIAR</button>
         <button [disabled]="stateButton" (click)="toggleContagem('refuse')">REFUGO</button>
         <button (click)="openDialog()">TUTORIAL</button>
     </div>
