@@ -5,6 +5,13 @@
     
 }
 
+.animationRed{
+    animation: changeBackgroundRed 1s ease-in-out infinite;
+}
+.animationBlue{
+    animation: changeBackgroundBlue 1s ease-in-out infinite;
+}
+
 section {
     width: 100%;
     height: 100%;
@@ -22,11 +29,32 @@ section {
     }
 }
 
+@keyframes changeBackgroundRed {
+    0% {
+        background-color: black; /* Cor inicial */
+    }
+    50% {
+        background-color: red; /* Cor intermediária */
+    }
+    100% {
+        background-color: black; /* Cor final */
+    }
+}
+@keyframes changeBackgroundBlue {
+    0% {
+        background-color: black; /* Cor inicial */
+    }
+    50% {
+        background-color: blue; /* Cor intermediária */
+    }
+    100% {
+        background-color: black; /* Cor final */
+    }
+}
+
 .inputGeral{
+    opacity: 0;
     position: absolute;
-    width: 100vw;
-    height: 100vh;
-    visibility: 0;
 }
 
 .info {

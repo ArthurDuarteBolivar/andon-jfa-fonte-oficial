@@ -18,13 +18,16 @@ import {MatInputModule} from '@angular/material/input';
 import {ReactiveFormsModule} from '@angular/forms';
 import { HomeComponent } from './pages/home/home.component';
 import { ControleGeralComponent } from './pages/controle-geral/controle-geral.component';
+import { PausaComponent } from './pages/pausa/pausa.component';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [
     AppComponent,
     DialogMetaComponent,
     HomeComponent,
-    ControleGeralComponent
+    ControleGeralComponent,
+    PausaComponent
   ],
   imports: [
     BrowserModule,
@@ -40,7 +43,8 @@ import { ControleGeralComponent } from './pages/controle-geral/controle-geral.co
     FormsModule,
     MatFormFieldModule,
     MatInputModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatSnackBarModule
   ],
   providers: [DECIMAL_FORMAT_DEFAULT ],
   bootstrap: [AppComponent]

@@ -30,6 +30,7 @@ export class QrcodeCounterComponent implements OnInit {
     this.operationService
       .atualizarOcupado(this.nomeOperacao.toString(), true)
       .subscribe();
-    this.router.navigate(['/counter/020']);
+    this.router.navigate(['counter/${this.nomeOperacao}']);
+    
   }
 }

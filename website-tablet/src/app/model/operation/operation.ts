@@ -3,4 +3,5 @@ export interface Operation {
     name:        string;
     limitedTime: number;
     ocupado: boolean;
+    pausa: boolean;
 }

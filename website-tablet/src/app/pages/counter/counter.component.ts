@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatChip } from '@angular/material/chips';
 import { MatChipsModule } from '@angular/material/chips/chips-module';
 import { MatDialog } from '@angular/material/dialog';
@@ -14,12 +14,13 @@ import { SheetsService } from 'src/app/service/sheets.service';
 import { DialogHelpComponent } from 'src/app/shared/dialog-help/dialog-help.component';
 import { HostListener } from '@angular/core';
 import { DialogAvisoComponent } from 'src/app/shared/dialog-aviso/dialog-aviso.component';
+import { state } from '@angular/animations';
 @Component({
   selector: 'app-counter',
   templateUrl: './counter.component.html',
   styleUrls: ['./counter.component.scss'],
 })
-export class CounterComponent implements OnInit, OnDestroy {
+export class CounterComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     private operationService: OperationService,
     private route: ActivatedRoute,
@@ -27,13 +28,13 @@ export class CounterComponent implements OnInit, OnDestroy {
     public dialog: MatDialog,
     private sheetsService: SheetsService,
     private router: Router
-    ) {}
-    imposto: number = 0;
-    shiftTime: number = 8.66;
-    minutos8: number = 0;
-    minutos9: number = 0;
-    realizadoInterval!: NodeJS.Timer;
-    minutos10: number = 0;
+  ) { }
+  imposto: number = 0;
+  shiftTime: number = 8.66;
+  minutos8: number = 0;
+  minutos9: number = 0;
+  realizadoInterval!: NodeJS.Timer;
+  minutos10: number = 0;
   minutos11: number = 0;
   minutos12: number = 0;
   minutos13: number = 0;
@@ -64,11 +65,15 @@ export class CounterComponent implements OnInit, OnDestroy {
   nomeOperacao: number = 0;
   newMaintenance: number = 0;
   nomeOperador: string = ''
+  qrcodeValue: string = ''
+  qrcodeProduto: string = ""
+  onQrcode: boolean = false
   operation: Operation = {
     id: 0,
     name: '',
     limitedTime: 0,
     ocupado: false,
+    pausa: false
   };
   storage: Storage = localStorage;
 
@@ -78,8 +83,17 @@ export class CounterComponent implements OnInit, OnDestroy {
       .atualizarOcupado(this.nomeOperacao.toString(), false)
       .subscribe();
   }
-  
+  @ViewChild('meuInput') meuInputRef!: ElementRef;
+
+  ngAfterViewInit(): void {
+    this.meuInputRef.nativeElement.focus();
+  }
+
   ngOnInit() {
+
+    setInterval(() => {
+      this.meuInputRef.nativeElement.focus();
+    }, 100)
 
     this.nomeOperador = this.storage.getItem("nome")!;
 
@@ -94,11 +108,11 @@ export class CounterComponent implements OnInit, OnDestroy {
               ]);
             }
             this.operation = res;
-          //   if (this.operation.name == '020' && this.operation.ocupado == false) {
-          //     this.router.navigate(['/qrcode/020'])
-          //     return;
-          //  }
-            
+            // if (this.operation.name == '020' && this.operation.ocupado == false) {
+            //   this.router.navigate(['/qrcode/020'])
+            //   return;
+            // }
+
             // if (this.operation.ocupado == true && this.operation.name != '020') {
             //   this.router.navigate(['/error']);
             // }
@@ -200,6 +214,23 @@ export class CounterComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.intervaloCounter();
     }, 1000);
+
+    setInterval(() => {
+      this.operationService.get(this.operation.name).subscribe(res => {
+        if (res.pausa == true) {
+          clearInterval(this.intervalo);
+          this.azulStateCalled = false;
+          this.vermelhoStateCalled = false;
+          this.tempoOcioso = 0;
+
+
+          this.operationService.atualizarState(this.operation.name, 'azul');
+        } else {
+          clearInterval(this.intervalo)
+          this.intervaloCounter()
+        }
+      })
+    }, 3000)
     this.operationService.getTCimposto().subscribe((res: Main[]) => {
       this.imposto = res[0].imposto;
       this.shiftTime = res[0].shiftTime;
@@ -326,6 +357,24 @@ export class CounterComponent implements OnInit, OnDestroy {
     }, 1000);
   }
 
+  qrCodeStart() {
+    this.onQrcode = true;
+    this.qrcodeProduto = this.qrcodeValue
+    if (
+      (this.qrcodeValue[0] == "J" && this.qrcodeValue[1] == "f" && this.qrcodeValue[2] == "a") || (this.qrcodeValue[0] == "J" && this.qrcodeValue[1] == "F" && this.qrcodeValue[2] == "a") || (this.qrcodeValue[0] == "J" && this.qrcodeValue[1] == "f" && this.qrcodeValue[2] == "A") || (this.qrcodeValue[0] == "J" && this.qrcodeValue[1] == "F" && this.qrcodeValue[2] == "A") ||
+      (this.qrcodeValue[0] == "j" && this.qrcodeValue[1] == "F" && this.qrcodeValue[2] == "a") || (this.qrcodeValue[0] == "j" && this.qrcodeValue[1] == "F" && this.qrcodeValue[2] == "A") || (this.qrcodeValue[0] == "j" && this.qrcodeValue[1] == "f" && this.qrcodeValue[2] == "A") || (this.qrcodeValue[0] == "j" && this.qrcodeValue[1] == "f" && this.qrcodeValue[2] == "a")
+    ) {
+
+      this.toggleContagem('count');
+      this.qrcodeValue = ''
+      this.meuInputRef.nativeElement.focus();
+    }
+    setTimeout(() => {
+      this.qrcodeValue = ""
+    }, 100);
+  }
+
+
   enterFullscreen() {
     const element = document.documentElement;
 
@@ -337,6 +386,7 @@ export class CounterComponent implements OnInit, OnDestroy {
   intervaloCounter() {
     this.intervalo = setInterval(() => {
       this.tempoOcioso++;
+      console.log(this.tempoOcioso)
       if (
         this.tempoOcioso > this.lmitedTime / 2 &&
         this.tempoOcioso < this.lmitedTime / 2 + 10
@@ -344,19 +394,20 @@ export class CounterComponent implements OnInit, OnDestroy {
         if (!this.azulStateCalled) {
           this.operationService.atualizarState(this.operation.name, 'azul');
           this.azulStateCalled = true;
-          this.vermelhoStateCalled = false; // Redefine a variável de vermelho
+          this.vermelhoStateCalled = false;
         }
       } else if (this.tempoOcioso > this.lmitedTime) {
         if (!this.vermelhoStateCalled) {
           this.operationService.atualizarState(this.operation.name, 'vermelho');
           this.vermelhoStateCalled = true;
-          this.azulStateCalled = false; 
+          this.azulStateCalled = false;
         }
       }
     }, 1000);
   }
   ngOnDestroy() {
     clearInterval(this.realizadoInterval)
+    clearInterval(this.intervalo)
     this.stopTimer('');
   }
 
@@ -369,17 +420,34 @@ export class CounterComponent implements OnInit, OnDestroy {
 
   toggleContagem(state: string) {
     clearInterval(this.intervalo);
+    this.azulStateCalled = false;
+    this.vermelhoStateCalled = false;
     this.tempoOcioso = 0;
     if (this.contadorRodando) {
       if (this.contador >= 15) {
+        if(this.onQrcode){
+          var qrcodeState = false;
+          if(state == "refuse"){
+            qrcodeState = false;
+          }else{
+            qrcodeState = true;
+          }
+          console.log(this.contador)
+          this.operationService.postQrcode(this.nomeOperador, this.qrcodeProduto, qrcodeState, this.operation.name, this.contador).subscribe(res => {
+            console.log(res)
+          })
+          this.onQrcode = false;
+        }
         this.tempoOcioso = 0;
         this.intervaloCounter();
         this.stopTimer(state);
         this.stateButton = true;
         this.contador = 0;
         this.operationService.atualizar(this.operation.name, this.contador);
-      }else{
+        this.meuInputRef.nativeElement.focus();
+      } else {
         this.openDialogAviso();
+
       }
     } else {
       if (state != 'refuse') {
@@ -452,7 +520,7 @@ export class CounterComponent implements OnInit, OnDestroy {
         shortestTC: this.contador,
         modelo: this.labelPosition,
       };
-      this.operationService.post(body).subscribe((res) => {});
+      this.operationService.post(body).subscribe((res) => { });
     } else if (this.contador >= this.lmitedTime * 3) {
       var body: Nodemcu = {
         count: this.count,
@@ -464,7 +532,7 @@ export class CounterComponent implements OnInit, OnDestroy {
         shortestTC: this.contador,
         modelo: this.labelPosition,
       };
-      this.operationService.post(body).subscribe((res) => {});
+      this.operationService.post(body).subscribe((res) => { });
     } else {
       var body: Nodemcu = {
         count: this.count,
@@ -476,7 +544,7 @@ export class CounterComponent implements OnInit, OnDestroy {
         shortestTC: this.contador,
         modelo: this.labelPosition,
       };
-      this.operationService.post(body).subscribe((res) => {});
+      this.operationService.post(body).subscribe((res) => { });
     }
     this.contador = 0; // Reseta o contador para 0 quando a contagem é parada
     this.operationService.atualizar(this.operation.name, 0);
