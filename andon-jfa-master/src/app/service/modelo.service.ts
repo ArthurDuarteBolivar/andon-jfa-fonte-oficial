@@ -11,11 +11,11 @@ export class ModeloService {
   constructor(private http: HttpClient) { }
 
   getAll(): Observable<Modelo[]>{
-    return this.http.get<Modelo[]>("http://172.16.34.147:8090/api/v1/fonte")
+    return this.http.get<Modelo[]>("http://localhost:8090/api/v1/fonte")
   }
 
   changeIsCurrent(modelo: string, isCurrent: boolean): void{
-   this.http.get("http://172.16.34.147:8090/api/v1/fonte/" + modelo + "/" + isCurrent).subscribe()
+   this.http.get("http://localhost:8090/api/v1/fonte/" + modelo + "/" + isCurrent).subscribe()
   }
 
 }

@@ -18,13 +18,16 @@ import {MatInputModule} from '@angular/material/input';
 import {ReactiveFormsModule} from '@angular/forms';
 import { HomeComponent } from './pages/home/home.component';
 import { ControleGeralComponent } from './pages/controle-geral/controle-geral.component';
+import { DialogControleRealizadoComponent } from './shared/dialog-controle-realizado/dialog-controle-realizado.component';
+import {MatTableModule} from '@angular/material/table';
 
 @NgModule({
   declarations: [
     AppComponent,
     DialogMetaComponent,
     HomeComponent,
-    ControleGeralComponent
+    ControleGeralComponent,
+    DialogControleRealizadoComponent
   ],
   imports: [
     BrowserModule,
@@ -40,7 +43,8 @@ import { ControleGeralComponent } from './pages/controle-geral/controle-geral.co
     FormsModule,
     MatFormFieldModule,
     MatInputModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatTableModule
   ],
   providers: [DECIMAL_FORMAT_DEFAULT ],
   bootstrap: [AppComponent]

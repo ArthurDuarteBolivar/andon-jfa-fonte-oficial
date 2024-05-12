@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import Chart from 'chart.js/auto';
+import { RealizadoGeral } from 'src/app/module/realizadoGeral';
 import { ResultadoGeral } from 'src/app/module/resultadoGeral';
+import { MainService } from 'src/app/service/main.service';
 import { NodemcuService } from 'src/app/service/nodemcu.service';
 
 @Component({
@@ -9,14 +11,15 @@ import { NodemcuService } from 'src/app/service/nodemcu.service';
   styleUrls: ['./controle-geral.component.scss']
 })
 export class ControleGeralComponent implements OnInit{
-  
-  constructor(private nodemcuService: NodemcuService){}
+
+  constructor(private nodemcuService: NodemcuService, private mainService: MainService){}
 
   public chart: any;
   resultadoGeral: ResultadoGeral[] = []
   dataImposto: Number[] = []
   dataRealizado: Number[] = []
   data: string[] = []
+  controleRealizado: RealizadoGeral[] = []
 
   ngOnInit(): void {
     this.nodemcuService.getAllResultadoGeral().subscribe(res => {
@@ -28,15 +31,19 @@ export class ControleGeralComponent implements OnInit{
       })
       this.createChart();
     })
+
+    this.mainService.getControleRealizadoByDate().subscribe(res => {
+      this.controleRealizado = res
+    })
   }
 
   createChart(){
-  
+
     this.chart = new Chart("MyChart", {
-      type: 'bar', 
+      type: 'bar',
 
       data: {
-        labels: this.data, 
+        labels: this.data,
 	       datasets: [
           {
             label: "Previsto",
@@ -47,13 +54,13 @@ export class ControleGeralComponent implements OnInit{
             label: "Realizado",
             data: this.dataRealizado,
             backgroundColor: 'limegreen'
-          }  
+          }
         ]
       },
       options: {
         aspectRatio:2.5
       }
-      
+
     });
   }
 }

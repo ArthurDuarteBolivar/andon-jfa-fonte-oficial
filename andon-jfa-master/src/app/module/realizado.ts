@@ -12,3 +12,18 @@ export interface Realizado {
     horas16: number;
     horas17: number;
   }
+
+
+  export interface Minutos{
+    minutos7: boolean;
+    minutos8: boolean;
+    minutos9: boolean;
+    minutos10: boolean;
+    minutos11: boolean;
+    minutos12: boolean;
+    minutos13: boolean;
+    minutos14: boolean;
+    minutos15: boolean;
+    minutos16: boolean;
+    minutos17: boolean;
+  }
