@@ -20,6 +20,8 @@ import { HomeComponent } from './pages/home/home.component';
 import { ControleGeralComponent } from './pages/controle-geral/controle-geral.component';
 import { PausaComponent } from './pages/pausa/pausa.component';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
+import { DialogPauseComponent } from './shared/dialog-pause/dialog-pause.component';
+import { DialogControleRealizadoComponent } from './shared/dialog-controle-realizado/dialog-controle-realizado.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +29,9 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
     DialogMetaComponent,
     HomeComponent,
     ControleGeralComponent,
-    PausaComponent
+    PausaComponent,
+    DialogPauseComponent,
+    DialogControleRealizadoComponent
   ],
   imports: [
     BrowserModule,

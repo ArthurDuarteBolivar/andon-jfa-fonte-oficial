@@ -64,7 +64,7 @@
     <tr>
       <th class="border-th">Operação</th>
       <td *ngFor="let item of nodemcu" [ngStyle]="{
-          'background-color': item.state === 'verde' ? '#00FF00':  (item.state === 'azul' ? '#5ac5e9' : 'red')
+          'background-color': item.state === 'verde' ? '#00FF00':  (item.state === 'azul' ? '#00FF00' : 'red')
         }" [ngClass]="{'unica-1': item.nameId.name === '080' || item.nameId.name === '090', 'unica-2': item.nameId.name === '100' || item.nameId.name === '110'}">
         {{ item.nameId.name }}
       </td>
@@ -99,7 +99,7 @@
       <th>3º Último TC</th>
       <td *ngFor="let item of nodemcu" [ngStyle]="{
           'background-color':
-          TCimpostado >= item.secondtlastTC ? '#00FF00' : ((TCimpostado * 3) <= item.secondtlastTC  ? 'red' : '#5ac5e9')
+          TCimpostado >= item.secondtlastTC ? '#00FF00' : ((TCimpostado * 3) <= item.secondtlastTC  ? 'red' : '#00FF00')
         }">
         {{ item.secondtlastTC }}
       </td>
@@ -108,7 +108,7 @@
       <th>2º Último TC</th>
       <td *ngFor="let item of nodemcu" [ngStyle]="{
           'background-color':
-          TCimpostado >= item.firtlastTC ? '#00FF00' : ((TCimpostado * 3) <= item.firtlastTC  ? 'red' : '#5ac5e9')
+          TCimpostado >= item.firtlastTC ? '#00FF00' : ((TCimpostado * 3) <= item.firtlastTC  ? 'red' : '#00FF00')
         }">
         {{ item.firtlastTC }}
       </td>
@@ -117,7 +117,7 @@
       <th>1º Último TC</th>
       <td *ngFor="let item of nodemcu" [ngStyle]="{
           'background-color':
-          TCimpostado >= item.currentTC ? '#00FF00' : ((TCimpostado * 3) <= item.currentTC  ? 'red' : '#5ac5e9')
+          TCimpostado >= item.currentTC ? '#00FF00' : ((TCimpostado * 3) <= item.currentTC  ? 'red' : '#00FF00')
         }">
         {{ item.currentTC }}
       </td>
@@ -126,7 +126,7 @@
       <th>Tempo Ciclo Atual</th>
       <td *ngFor="let item of nodemcu" [ngStyle]="{
           'background-color':
-          TCimpostado >= item.localTC ? '#00FF00' : ((TCimpostado * 3) <= item.localTC  ? 'red' : '#5ac5e9')
+          TCimpostado >= item.localTC ? '#00FF00' : ((TCimpostado * 3) <= item.localTC  ? 'red' : '#00FF00')
         }">
         {{ item.localTC }}
       </td>

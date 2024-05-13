@@ -68,12 +68,19 @@ public class NodemcuController {
     private void agendarTarefa() {
         System.out.println("passou 2");
         Runnable task = () -> {
-            zerarDados(); // Chame a função desejada aqui
+            System.out.println("IsCalling");
+            Calendar calendar = Calendar.getInstance();
+            int hour = calendar.get(Calendar.HOUR_OF_DAY);
+            int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+            if (hour >= 20 & hour <= 21 && dayOfWeek >= Calendar.MONDAY && dayOfWeek <= Calendar.FRIDAY) {
+                zerarDados();
+            }
         };
 
         // Agende a tarefa para ser executada a cada hora
         scheduler.scheduleAtFixedRate(task, 0, 1, TimeUnit.HOURS);
     }
+
 
     @GetMapping()
     public List<NodemcuModel> list() {
@@ -151,6 +158,9 @@ public class NodemcuController {
     @GetMapping("/atualizarState/{name}/{state}")
     public void atualizarCor(@PathVariable("name") String name, @PathVariable("state") String state) {
         OperationModel operation = operationRepository.findByName(name);
+        if(state.equals("azul")){
+            state = "verde";
+        }
         repository.updateStateByNameId(state, operation.getId());
     }
 
@@ -358,9 +368,8 @@ public class NodemcuController {
     // }
 
     public void zerarDados() {
-        if (!zerouDados) {
-            Date date = new Date();
-            if (date.getHours() >= 20 && date.getHours() <= 21) {
+        if (zerouDados) {
+            try{
                 OperationModel operations = operationRepository.findByName("160");
                 NodemcuModel nodemcuResultadoGeral = repository.findByNameId(operations);
                 Optional<MainModel> main = mainRepostory.findById(1);
@@ -386,7 +395,6 @@ public class NodemcuController {
                     reset.setHoras16(0);
                     realizadoHorariaRepository.save(reset);
                 });
-
                 List<NodemcuModel> nodemcuList = repository.findAll();
                 for (NodemcuModel nodemcu : nodemcuList) {
                     nodemcu.setCurrentTC(0);
@@ -424,8 +432,81 @@ public class NodemcuController {
                     op.setOcupado(false);
                     operationRepository.save(op);
                 }
+            }catch (Exception e) {
+                e.printStackTrace();
             }
+            zerouDados = false;
+        } else {
+            zerouDados = true;
+        }
         }
     }
 
-}
+//    public void zerarDados() {
+//        if (zerouDados) {
+//            OperationModel operations = operationRepository.findByName("160");
+//            NodemcuModel nodemcuResultadoGeral = repository.findByNameId(operations);
+//            Optional<MainModel> main = mainRepostory.findById(1);
+//            ControleGeralModel controleGeral = new ControleGeralModel();
+//            controleGeral.setImposto((int) Math.floor(main.get().getImposto()));
+//            controleGeral.setRealizado(nodemcuResultadoGeral.getCount());
+//            controleGeral.setData(new Date());
+//            controleGeralRepository.save(controleGeral);
+//
+//            System.out.println("zerou dados");
+//            Optional<RealizadoHorariaModel> realizadoReset = realizadoHorariaRepository.findById(1);
+//            realizadoReset.ifPresent(reset -> {
+//                reset.setHoras12(0);
+//                reset.setHoras11(0);
+//                reset.setHoras10(0);
+//                reset.setHoras9(0);
+//                reset.setHoras8(0);
+//                reset.setHoras7(0);
+//                reset.setHoras13(0);
+//                reset.setHoras14(0);
+//                reset.setHoras15(0);
+//                reset.setHoras17(0);
+//                reset.setHoras16(0);
+//                realizadoHorariaRepository.save(reset);
+//            });
+//            List<NodemcuModel> nodemcuList = repository.findAll();
+//            for (NodemcuModel nodemcu : nodemcuList) {
+//                nodemcu.setCurrentTC(0);
+//                nodemcu.setCount(0);
+//                nodemcu.setFirtlastTC(0);
+//                nodemcu.setSecondtlastTC(0);
+//                nodemcu.setThirdlastTC(0);
+//                nodemcu.setState("verde");
+//                nodemcu.setMaintenance(0);
+//                nodemcu.setQtdeTCexcedido(0);
+//                nodemcu.setTCmedio(0);
+//                nodemcu.setShortestTC(9999);
+//                nodemcu.setLocalTC(0);
+//                nodemcu.setCount(0);
+//                repository.save(nodemcu);
+//            }
+//
+//            List<RealizadoHorariaTabletModel> realizadoList = realizadoHorariaTabletRepository.findAll();
+//            for (RealizadoHorariaTabletModel realizado : realizadoList) {
+//                realizado.setHoras7(0);
+//                realizado.setHoras8(0);
+//                realizado.setHoras9(0);
+//                realizado.setHoras10(0);
+//                realizado.setHoras11(0);
+//                realizado.setHoras12(0);
+//                realizado.setHoras13(0);
+//                realizado.setHoras14(0);
+//                realizado.setHoras15(0);
+//                realizado.setHoras16(0);
+//                realizado.setHoras17(0);
+//                realizadoHorariaTabletRepository.save(realizado);
+//            }
+//            List<OperationModel> operation = operationRepository.findAll();
+//            for (OperationModel op : operation) {
+//                op.setOcupado(false);
+//                operationRepository.save(op);
+//            }
+//        } else {
+//            zerouDados = true;
+//        }
+//    }

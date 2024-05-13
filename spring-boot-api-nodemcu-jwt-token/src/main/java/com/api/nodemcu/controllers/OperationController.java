@@ -7,11 +7,11 @@ import com.api.nodemcu.repository.OperationRepository;
 
 import jakarta.transaction.Transactional;
 
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
 
@@ -50,17 +50,18 @@ public class OperationController {
     }
 
     @GetMapping("/pausa/{pausa}")
-    public void updatePausa(@PathVariable Boolean pausa){
-        List<NodemcuModel> nodemcu = nodemcuRepository.findAll();
-        for(NodemcuModel item : nodemcu){
-            item.setState("verde");
-            nodemcuRepository.save(item);
+    public void updatePausa(@PathVariable Boolean pausa) {
+        {
+            List<NodemcuModel> nodemcu = nodemcuRepository.findAll();
+            for (NodemcuModel item : nodemcu) {
+                item.setState("verde");
+                nodemcuRepository.save(item);
+            }
+            List<OperationModel> operation = repository.findAll();
+            for (OperationModel op : operation) {
+                op.setPausa(pausa);
+                repository.save(op);
+            }
         }
-        List<OperationModel> operation = repository.findAll();
-        for (OperationModel op : operation) {
-            op.setPausa(pausa);
-            repository.save(op);
-        }
-    }
 
-}
+    }}

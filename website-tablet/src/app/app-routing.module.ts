@@ -9,7 +9,7 @@ const routes: Routes = [
   { path: 'counter/:name', component: CounterComponent },
   { path: 'qrcode/:name', component: QrcodeCounterComponent },
   { path: 'error', component: ErrorRouterComponent },
-  {path: '**', redirectTo: 'counter/010'}
+  {path: '**', redirectTo: ''}
 ];
 
 @NgModule({

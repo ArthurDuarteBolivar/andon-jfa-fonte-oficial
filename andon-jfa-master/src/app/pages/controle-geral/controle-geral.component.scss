@@ -1,0 +1,29 @@
+.chart-container{
+    background: white;
+    width: 80%;
+    margin: auto;
+    border-radius: 7px;
+    padding: 7px;
+    margin-top: 20px;
+}
+
+.custom-table {
+    margin: auto;
+    width: 90%;
+    margin-top: 20px;
+    border-collapse: collapse;
+  
+    th, td {
+      border: 1px solid white;
+      padding: 8px;
+      text-align: left;
+    }
+  
+    th {
+      // background-color: #f2f2f2;
+    }
+  
+    tr:nth-child(even) {
+      // background-color: #f2f2f2;
+    }
+  }

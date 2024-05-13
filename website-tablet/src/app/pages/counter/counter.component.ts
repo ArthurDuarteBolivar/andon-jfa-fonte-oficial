@@ -68,6 +68,7 @@ export class CounterComponent implements OnInit, OnDestroy, AfterViewInit {
   qrcodeValue: string = ''
   qrcodeProduto: string = ""
   onQrcode: boolean = false
+  onPausa: boolean = false;
   operation: Operation = {
     id: 0,
     name: '',
@@ -104,14 +105,26 @@ export class CounterComponent implements OnInit, OnDestroy, AfterViewInit {
           (res) => {
             if (res == null) {
               this.router.navigate([
-                `http://172.16.34.147:4200/counter/${this.nomeOperacao}`,
+                `http://172.16.34.229:4200/counter/${this.nomeOperacao}`,
               ]);
             }
             this.operation = res;
-            // if (this.operation.name == '020' && this.operation.ocupado == false) {
-            //   this.router.navigate(['/qrcode/020'])
-            //   return;
-            // }
+            if(this.storage.getItem('nome')?.length! < 2){
+              if (this.operation.name == '080') {
+                this.router.navigate(['/qrcode/080'])
+                return;
+              }else if(this.operation.name == '100'){
+                this.router.navigate(['/qrcode/100'])
+                return;
+              }else if(this.operation.name == '110'){
+                this.router.navigate(['/qrcode/110'])
+                return;
+              }else if(this.operation.name == '090'){
+                this.router.navigate(['/qrcode/090'])
+                return;
+              }
+            }
+
 
             // if (this.operation.ocupado == true && this.operation.name != '020') {
             //   this.router.navigate(['/error']);
@@ -152,7 +165,7 @@ export class CounterComponent implements OnInit, OnDestroy, AfterViewInit {
           },
           (errr) => {
             this.router.navigate([
-              `http://172.16.34.147:4200/counter/${this.nomeOperacao}`,
+              `http://172.16.34.229:4200/counter/${this.nomeOperacao}`,
             ]);
           }
         );
@@ -164,7 +177,7 @@ export class CounterComponent implements OnInit, OnDestroy, AfterViewInit {
       },
       (errr) => {
         this.router.navigate([
-          `http://172.16.34.147:4200/counter/${this.nomeOperacao}`,
+          `http://172.16.34.229:4200/counter/${this.nomeOperacao}`,
         ]);
       }
     );
@@ -218,19 +231,26 @@ export class CounterComponent implements OnInit, OnDestroy, AfterViewInit {
     setInterval(() => {
       this.operationService.get(this.operation.name).subscribe(res => {
         if (res.pausa == true) {
+          this.onPausa = true;
+          clearInterval(this.intervalRef);
           clearInterval(this.intervalo);
           this.azulStateCalled = false;
           this.vermelhoStateCalled = false;
           this.tempoOcioso = 0;
-
-
-          this.operationService.atualizarState(this.operation.name, 'azul');
+          this.stateButton = true;
+          this.contador = 0;
+          this.tempoOcioso = 0;
+          this.stateButton = true;
+          this.contadorRodando = false;
+          this.contador = 0;
+          this.operationService.atualizarState(this.operation.name, 'verde');
         } else {
+          this.onPausa = false;
           clearInterval(this.intervalo)
           this.intervaloCounter()
         }
       })
-    }, 3000)
+    }, 5000)
     this.operationService.getTCimposto().subscribe((res: Main[]) => {
       this.imposto = res[0].imposto;
       this.shiftTime = res[0].shiftTime;
@@ -385,26 +405,30 @@ export class CounterComponent implements OnInit, OnDestroy, AfterViewInit {
 
   intervaloCounter() {
     this.intervalo = setInterval(() => {
-      this.tempoOcioso++;
-      console.log(this.tempoOcioso)
-      if (
-        this.tempoOcioso > this.lmitedTime / 2 &&
-        this.tempoOcioso < this.lmitedTime / 2 + 10
-      ) {
-        if (!this.azulStateCalled) {
-          this.operationService.atualizarState(this.operation.name, 'azul');
-          this.azulStateCalled = true;
-          this.vermelhoStateCalled = false;
+      if (!this.contadorRodando) {
+        
+        if (
+          this.tempoOcioso > this.lmitedTime / 2 &&
+          this.tempoOcioso < this.lmitedTime / 2 + 10
+        ) {
+          if (!this.azulStateCalled) {
+            this.operationService.atualizarState(this.operation.name, 'azul');
+            this.azulStateCalled = true;
+            this.vermelhoStateCalled = false;
+          }
+        } else if (this.tempoOcioso > this.lmitedTime) {
+          if (!this.vermelhoStateCalled) {
+            this.operationService.atualizarState(this.operation.name, 'vermelho');
+            this.vermelhoStateCalled = true;
+            this.azulStateCalled = false;
+          }
         }
-      } else if (this.tempoOcioso > this.lmitedTime) {
-        if (!this.vermelhoStateCalled) {
-          this.operationService.atualizarState(this.operation.name, 'vermelho');
-          this.vermelhoStateCalled = true;
-          this.azulStateCalled = false;
-        }
+        
+        this.tempoOcioso++;
       }
     }, 1000);
-  }
+}
+
   ngOnDestroy() {
     clearInterval(this.realizadoInterval)
     clearInterval(this.intervalo)
@@ -425,16 +449,18 @@ export class CounterComponent implements OnInit, OnDestroy, AfterViewInit {
     this.tempoOcioso = 0;
     if (this.contadorRodando) {
       if (this.contador >= 15) {
+        console.log(this.onQrcode)
         if(this.onQrcode){
           var qrcodeState = false;
-          if(state == "refuse"){
+          if(
+            state == "refuse"){
+            console.log(qrcodeState)
             qrcodeState = false;
           }else{
             qrcodeState = true;
           }
-          console.log(this.contador)
           this.operationService.postQrcode(this.nomeOperador, this.qrcodeProduto, qrcodeState, this.operation.name, this.contador).subscribe(res => {
-            console.log(res)
+
           })
           this.onQrcode = false;
         }
@@ -447,7 +473,7 @@ export class CounterComponent implements OnInit, OnDestroy, AfterViewInit {
         this.meuInputRef.nativeElement.focus();
       } else {
         this.openDialogAviso();
-
+        this.operationService.postIndisponivel(this.operation.name).subscribe()
       }
     } else {
       if (state != 'refuse') {
@@ -458,34 +484,42 @@ export class CounterComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   iniciarContagem(state: string) {
+    this.azulStateCalled = false
+    this.vermelhoStateCalled = false
+    this.tempoOcioso = 0
     this.currentState = 'verde';
     this.contadorRodando = true;
     this.intervalRef = setInterval(() => {
-      this.contador++;
-      this.operationService.atualizar(this.operation.name, this.contador);
-      if (this.contador > 9999) {
-        this.stopTimer(state);
-      } else if (
-        this.contador > this.lmitedTime &&
-        this.currentState == 'azul'
-      ) {
-        this.currentState = 'vermelho';
-        this.operationService.atualizarState(this.operation.name, 'azul');
-      } else if (
-        this.contador > this.lmitedTime * 3 &&
-        this.currentState == 'vermelho'
-      ) {
-        this.currentState = 'verde';
-        this.operationService.atualizarState(this.operation.name, 'vermelho');
-      } else if (
-        this.contador < this.lmitedTime &&
-        this.currentState == 'verde'
-      ) {
-        this.currentState = 'azul';
-        this.operationService.atualizarState(this.operation.name, 'verde');
-      }
+        this.contador++;
+        this.operationService.atualizar(this.operation.name, this.contador);
+        if (this.contador > 9999) {
+            this.stopTimer(state);
+        } else if (
+            this.contador > this.lmitedTime &&
+            this.currentState == 'azul'
+        ) {
+            this.currentState = 'vermelho';
+            this.operationService.atualizarState(this.operation.name, 'azul');
+            this.azulStateCalled = true;
+            this.vermelhoStateCalled = false;
+        } else if (
+            this.contador > this.lmitedTime * 3 &&
+            this.currentState == 'vermelho'
+        ) {
+            this.currentState = 'verde';
+            this.operationService.atualizarState(this.operation.name, 'vermelho');
+            this.azulStateCalled = false;
+            this.vermelhoStateCalled = true;
+        } else if (
+            this.contador < this.lmitedTime &&
+            this.currentState == 'verde'
+        ) {
+            this.currentState = 'azul';
+            this.operationService.atualizarState(this.operation.name, 'verde');
+            
+        }
     }, 1000);
-  }
+}
 
   stopTimer(state: string) {
     this.operationService.getTCimposto().subscribe((res: Main[]) => {

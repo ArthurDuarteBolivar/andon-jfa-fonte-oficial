@@ -71,6 +71,18 @@ export class OperationService {
       "execucao": execucao,
     });
   }
+
+  postIndisponivel(op: string) {
+    const dataAtual = new Date();
+    const dataFormatada = `${dataAtual.getFullYear()}-${(dataAtual.getMonth() + 1).toString().padStart(2, '0')}-${dataAtual.getDate().toString().padStart(2, '0')}`;
+    const horaFormatada = dataAtual.toLocaleTimeString();
+  
+    return this.http.post("http://172.16.34.229:3000/indisponivel", {
+      "op": op,
+      "data": dataFormatada,
+      "hora": horaFormatada,
+    });
+  }
   
 }
 

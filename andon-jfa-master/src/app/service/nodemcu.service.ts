@@ -34,4 +34,8 @@ export class NodemcuService {
   pausa(pausa: boolean){
     return this.http.get(environment.url + "operation/pausa/" + pausa)
   }
+
+  postPausa(){
+    this.http.post(environment.url+ "pausa", {}).subscribe()
+  }
 }

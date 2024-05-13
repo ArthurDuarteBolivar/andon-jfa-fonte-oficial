@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { NodemcuService } from 'src/app/service/nodemcu.service';
 
+
 @Component({
   selector: 'app-pausa',
   templateUrl: './pausa.component.html',
@@ -10,24 +11,34 @@ import { NodemcuService } from 'src/app/service/nodemcu.service';
 export class PausaComponent implements OnInit {
 
   constructor(private nodemcuService: NodemcuService, private _snackBar: MatSnackBar){}
+  OnCafe: boolean = false;
+  OnAlmoco: boolean = false;
 
   ngOnInit(): void {
   }
   cafe() {
+    this.nodemcuService.postPausa()
+    this.OnCafe = true
     this.nodemcuService.pausa(true).subscribe()
     this.openSnackBar("Pausado com sucesso")
     setTimeout(() => {
       this.openSnackBar("Reiniciado com sucesso")
       this.nodemcuService.pausa(false).subscribe()
-    }, 600000); //10 minutos
+      this.OnCafe = false
+    }, 60000); //10 minutos
   }
   almoco() {
+    this.nodemcuService.postPausa()
+    this.OnAlmoco = true
     this.openSnackBar("Pausado com sucesso")
     this.nodemcuService.pausa(true).subscribe()
     setTimeout(() => {
+      this.OnAlmoco = false
       this.nodemcuService.pausa(false).subscribe()
       this.openSnackBar("Reiniciado com sucesso")
-    }, 3600000);//60 minutos
+      
+    }, 60000);//60 minutos
+    //3600000
     
   }
 
