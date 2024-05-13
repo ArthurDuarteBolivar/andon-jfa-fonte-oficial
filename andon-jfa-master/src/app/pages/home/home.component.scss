@@ -102,10 +102,14 @@ section {
     justify-content: flex-end;
     height: 100%;
     h1:nth-child(1){
-      font-size: 3rem;
+      font-size: 2.6rem;
       margin: 0;
       margin-top: 10px;
       margin-bottom: 10px;
+      display: flex;
+      flex-direction: row;
+      text-align: center;
+      text-transform: uppercase;
     }
   
     h1:nth-child(2){
@@ -123,11 +127,6 @@ section {
       font-size: 2rem;
       color: black;
       font-weight: 800;
-      span{
-        font-size: 1.3rem;
-        margin: 0;
-        text-transform: uppercase;
-      }
     }
   }
   .div4 {

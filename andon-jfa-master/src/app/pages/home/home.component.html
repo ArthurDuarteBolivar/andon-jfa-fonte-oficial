@@ -1,8 +1,8 @@
 <mat-spinner *ngIf="init == false"></mat-spinner>
 <section *ngIf="init">
   <div class="div3">
-    <h1>FONTE</h1>
-    <h1>PRODUÇÃO<span *ngIf="modeloAtual && modeloAtual.modelo !== ''">{{modeloAtual.modelo}}</span></h1>
+    <h1 *ngIf="modeloAtual && modeloAtual.modelo !== ''">FONTE {{modeloAtual.modelo}}</h1>
+    <h1>{{dataAtual | date: "d/MM/YY  hh:mm:ss"}}</h1>
   </div>
 
   <div class="div2">

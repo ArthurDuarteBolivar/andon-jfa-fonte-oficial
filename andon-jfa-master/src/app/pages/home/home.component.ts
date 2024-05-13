@@ -27,6 +27,7 @@ export class HomeComponent implements OnInit {
 
 
   isPrevisto: boolean = false
+  dataAtual = new Date();
   modeloAtual!: Modelo;
   diaDaSemanda: Date = new Date();
   dataGraph: any[] = [];
@@ -362,6 +363,7 @@ export class HomeComponent implements OnInit {
         this.TCmedioRealizado = 0;
         this.getRealizado();
       });
+      this.dataAtual = new Date();
     }, 1000);
     setInterval(() => {
       this.nodemcuService.getAllRealizado().subscribe((res) => {
