@@ -115,9 +115,14 @@ public class NodemcuController {
         device.setThirdlastTC(device.getSecondtlastTC());
         device.setSecondtlastTC(device.getFirtlastTC());
         device.setFirtlastTC(device.getCurrentTC());
+
+        Float tcimposto = mainRepostory.findById(1).get().getTCimposto();
+        if(nodemcuUpdates.getNameId().getName().equals("100") || nodemcuUpdates.getNameId().getName().equals("110")){
+            tcimposto = tcimposto * 2;
+        }
         if (device.getShortestTC() > nodemcuUpdates.getShortestTC() && nodemcuUpdates.getShortestTC() > 10) {
             device.setShortestTC(nodemcuUpdates.getShortestTC());
-        } else if (mainRepostory.findById(1).get().getTCimposto() < nodemcuUpdates.getCurrentTC()) {
+        } else if (tcimposto < nodemcuUpdates.getCurrentTC()) {
             Integer excedido = device.getQtdeTCexcedido();
             excedido++;
             device.setQtdeTCexcedido(excedido);
@@ -342,8 +347,9 @@ public class NodemcuController {
                 realizadoHorariaTabletRepository.save(realizado);
                 break;
         }
-        // device.setCount(realizadoHorariaTabletRepository.somarTudo());
-        // repository.save(device);
+        System.out.println(realizado.getId());
+         device.setCount(realizadoHorariaTabletRepository.somarTudo(realizado.getId()));
+         repository.save(device);
     }
 
     @Transactional

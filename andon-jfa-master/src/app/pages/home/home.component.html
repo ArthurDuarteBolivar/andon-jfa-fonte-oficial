@@ -1,8 +1,8 @@
 <mat-spinner *ngIf="init == false"></mat-spinner>
 <section *ngIf="init">
   <div class="div3">
-    <h1 *ngIf="modeloAtual && modeloAtual.modelo !== ''">FONTE {{modeloAtual.modelo}}</h1>
-    <h1>{{dataAtual | date: "d/MM/YY  hh:mm:ss"}}</h1>
+    <h1 *ngIf="modeloAtual && modeloAtual.modelo !== ''">{{modeloAtual.modelo}}</h1>
+    <h1>{{dataAtual | date: "d/MM/YY  hh:mm"}}</h1>
   </div>
 
   <div class="div2">
@@ -64,8 +64,8 @@
     <tr>
       <th class="border-th">Operação</th>
       <td *ngFor="let item of nodemcu" [ngStyle]="{
-          'background-color': item.state === 'verde' ? '#00FF00':  (item.state === 'azul' ? '#00FF00' : 'red')
-        }" [ngClass]="{'unica-1': item.nameId.name === '080' || item.nameId.name === '090', 'unica-2': item.nameId.name === '100' || item.nameId.name === '110'}">
+          'background-color': item.state === 'verde' ? '#00FF00':  (item.state === 'azul' ? '#5ac5e9' : 'red')
+        }" [ngClass]="{'unica-1': item.nameId.name === '080' || item.nameId.name === '090', 'unica-2': item.nameId.name === '100' || item.nameId.name === '080' || item.nameId.name === '090' || item.nameId.name === '110'}">
         {{ item.nameId.name }}
       </td>
     </tr>
@@ -98,36 +98,42 @@
     <tr>
       <th>3º Último TC</th>
       <td *ngFor="let item of nodemcu" [ngStyle]="{
-          'background-color':
-          TCimpostado >= item.secondtlastTC ? '#00FF00' : ((TCimpostado * 3) <= item.secondtlastTC  ? 'red' : '#00FF00')
-        }">
+        'background-color': 
+          TCimpostado >= item.secondtlastTC ? '#00FF00' : 
+          (((item.nameId.name === '110' || item.nameId.name === '100' || item.nameId.name === '080' || item.nameId.name === '090') ? (180) : (TCimpostado)) <= item.secondtlastTC ? 'red' : '#00FF00')
+      }">
         {{ item.secondtlastTC }}
-      </td>
+      </td>      
     </tr>
     <tr>
       <th>2º Último TC</th>
       <td *ngFor="let item of nodemcu" [ngStyle]="{
-          'background-color':
-          TCimpostado >= item.firtlastTC ? '#00FF00' : ((TCimpostado * 3) <= item.firtlastTC  ? 'red' : '#00FF00')
-        }">
+        'background-color': 
+          TCimpostado >= item.firtlastTC ? '#00FF00' : 
+          (((item.nameId.name === '110' || item.nameId.name === '100' || item.nameId.name === '080' || item.nameId.name === '090') ?  (180) : (TCimpostado)) <= item.firtlastTC ? 'red' : '#00FF00')
+      }">
         {{ item.firtlastTC }}
       </td>
+      
     </tr>
     <tr>
       <th>1º Último TC</th>
       <td *ngFor="let item of nodemcu" [ngStyle]="{
-          'background-color':
-          TCimpostado >= item.currentTC ? '#00FF00' : ((TCimpostado * 3) <= item.currentTC  ? 'red' : '#00FF00')
-        }">
+        'background-color': 
+          TCimpostado >= item.currentTC ? '#00FF00' : 
+          (((item.nameId.name === '110' || item.nameId.name === '100' || item.nameId.name === '080' || item.nameId.name === '090') ? (180) : (TCimpostado)) <= item.currentTC ? 'red' : '#00FF00')
+      }">
         {{ item.currentTC }}
       </td>
+      
     </tr>
     <tr>
       <th>Tempo Ciclo Atual</th>
       <td *ngFor="let item of nodemcu" [ngStyle]="{
-          'background-color':
-          TCimpostado >= item.localTC ? '#00FF00' : ((TCimpostado * 3) <= item.localTC  ? 'red' : '#00FF00')
-        }">
+        'background-color': 
+          TCimpostado >= item.localTC ? '#00FF00' : 
+          (((item.nameId.name === '110' || item.nameId.name === '100' || item.nameId.name === '080' || item.nameId.name === '090') ? (180) : (TCimpostado)) <= item.localTC ? 'red' : '#00FF00')
+      }">
         {{ item.localTC }}
       </td>
     </tr>

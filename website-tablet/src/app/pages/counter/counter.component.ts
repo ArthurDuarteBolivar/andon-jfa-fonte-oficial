@@ -59,6 +59,7 @@ export class CounterComponent implements OnInit, OnDestroy, AfterViewInit {
   count: number = 0;
   maintenance: number = 0;
   lmitedTime: number = 0;
+  limitedTimeOcioso: number = 0;
   teste: any = true;
   labelPosition: string = '';
   newConter: number = 0;
@@ -67,7 +68,10 @@ export class CounterComponent implements OnInit, OnDestroy, AfterViewInit {
   nomeOperador: string = ''
   qrcodeValue: string = ''
   qrcodeProduto: string = ""
-  onQrcode: boolean = false
+  analiseButton: boolean = false;
+  onQrcode: boolean = false;
+  onAnalise: boolean = false;
+  onFonteGrande: boolean = false;
   onPausa: boolean = false;
   operation: Operation = {
     id: 0,
@@ -109,17 +113,18 @@ export class CounterComponent implements OnInit, OnDestroy, AfterViewInit {
               ]);
             }
             this.operation = res;
-            if(this.storage.getItem('nome')?.length! < 2){
+            this.desligarOperacaoNaFonteGrande();
+            if (this.storage.getItem('nome')?.length! < 2) {
               if (this.operation.name == '080') {
                 this.router.navigate(['/qrcode/080'])
                 return;
-              }else if(this.operation.name == '100'){
+              } else if (this.operation.name == '100') {
                 this.router.navigate(['/qrcode/100'])
                 return;
-              }else if(this.operation.name == '110'){
+              } else if (this.operation.name == '110') {
                 this.router.navigate(['/qrcode/110'])
                 return;
-              }else if(this.operation.name == '090'){
+              } else if (this.operation.name == '090') {
                 this.router.navigate(['/qrcode/090'])
                 return;
               }
@@ -185,6 +190,8 @@ export class CounterComponent implements OnInit, OnDestroy, AfterViewInit {
       (res: Main[]) => {
         res.forEach((res) => {
           this.lmitedTime = res.tcimposto;
+          this.limitedTimeOcioso = res.tcimposto;
+          this.ajustarTempoEnvelhecimento();
         });
       },
       (error) => {
@@ -196,6 +203,8 @@ export class CounterComponent implements OnInit, OnDestroy, AfterViewInit {
         (res: Main[]) => {
           res.forEach((res) => {
             this.lmitedTime = res.tcimposto;
+            this.limitedTimeOcioso = res.tcimposto;
+            this.ajustarTempoEnvelhecimento();
           });
         },
         (error) => {
@@ -229,12 +238,12 @@ export class CounterComponent implements OnInit, OnDestroy, AfterViewInit {
     }, 1000);
 
     setInterval(() => {
+      this.desligarOperacaoNaFonteGrande();
       this.operationService.get(this.operation.name).subscribe(res => {
         if (res.pausa == true) {
           this.onPausa = true;
           clearInterval(this.intervalRef);
           clearInterval(this.intervalo);
-          this.azulStateCalled = false;
           this.vermelhoStateCalled = false;
           this.tempoOcioso = 0;
           this.stateButton = true;
@@ -405,29 +414,19 @@ export class CounterComponent implements OnInit, OnDestroy, AfterViewInit {
 
   intervaloCounter() {
     this.intervalo = setInterval(() => {
-      if (!this.contadorRodando) {
-        
-        if (
-          this.tempoOcioso > this.lmitedTime / 2 &&
-          this.tempoOcioso < this.lmitedTime / 2 + 10
-        ) {
-          if (!this.azulStateCalled) {
-            this.operationService.atualizarState(this.operation.name, 'azul');
-            this.azulStateCalled = true;
-            this.vermelhoStateCalled = false;
-          }
-        } else if (this.tempoOcioso > this.lmitedTime) {
+      if (!this.contadorRodando && this.analiseButton != true && this.onAnalise != true && this.onFonteGrande != true) { 
+        console.log(this.tempoOcioso)
+        if (this.tempoOcioso > this.limitedTimeOcioso) {
           if (!this.vermelhoStateCalled) {
             this.operationService.atualizarState(this.operation.name, 'vermelho');
             this.vermelhoStateCalled = true;
-            this.azulStateCalled = false;
           }
         }
-        
+
         this.tempoOcioso++;
       }
     }, 1000);
-}
+  }
 
   ngOnDestroy() {
     clearInterval(this.realizadoInterval)
@@ -444,19 +443,18 @@ export class CounterComponent implements OnInit, OnDestroy, AfterViewInit {
 
   toggleContagem(state: string) {
     clearInterval(this.intervalo);
-    this.azulStateCalled = false;
     this.vermelhoStateCalled = false;
     this.tempoOcioso = 0;
     if (this.contadorRodando) {
       if (this.contador >= 15) {
         console.log(this.onQrcode)
-        if(this.onQrcode){
+        if (this.onQrcode) {
           var qrcodeState = false;
-          if(
-            state == "refuse"){
+          if (
+            state == "refuse") {
             console.log(qrcodeState)
             qrcodeState = false;
-          }else{
+          } else {
             qrcodeState = true;
           }
           this.operationService.postQrcode(this.nomeOperador, this.qrcodeProduto, qrcodeState, this.operation.name, this.contador).subscribe(res => {
@@ -484,42 +482,39 @@ export class CounterComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   iniciarContagem(state: string) {
-    this.azulStateCalled = false
     this.vermelhoStateCalled = false
     this.tempoOcioso = 0
     this.currentState = 'verde';
     this.contadorRodando = true;
     this.intervalRef = setInterval(() => {
-        this.contador++;
-        this.operationService.atualizar(this.operation.name, this.contador);
-        if (this.contador > 9999) {
-            this.stopTimer(state);
-        } else if (
-            this.contador > this.lmitedTime &&
-            this.currentState == 'azul'
-        ) {
-            this.currentState = 'vermelho';
-            this.operationService.atualizarState(this.operation.name, 'azul');
-            this.azulStateCalled = true;
-            this.vermelhoStateCalled = false;
-        } else if (
-            this.contador > this.lmitedTime * 3 &&
-            this.currentState == 'vermelho'
-        ) {
-            this.currentState = 'verde';
-            this.operationService.atualizarState(this.operation.name, 'vermelho');
-            this.azulStateCalled = false;
-            this.vermelhoStateCalled = true;
-        } else if (
-            this.contador < this.lmitedTime &&
-            this.currentState == 'verde'
-        ) {
-            this.currentState = 'azul';
-            this.operationService.atualizarState(this.operation.name, 'verde');
-            
-        }
+      this.contador++;
+      this.operationService.atualizar(this.operation.name, this.contador);
+      if (this.contador > 9999) {
+        this.stopTimer(state);
+      } else if (
+        this.contador > this.lmitedTime &&
+        this.currentState == 'azul'
+      ) {
+        this.currentState = 'vermelho';
+        this.operationService.atualizarState(this.operation.name, 'vermelho');
+        this.vermelhoStateCalled = false;
+      } else if (
+        this.contador > this.lmitedTime * 2 &&
+        this.currentState == 'vermelho'
+      ) {
+        this.currentState = 'verde';
+        this.operationService.atualizarState(this.operation.name, 'vermelho');
+        this.vermelhoStateCalled = true;
+      } else if (
+        this.contador < this.lmitedTime &&
+        this.currentState == 'verde'
+      ) {
+        this.currentState = 'azul';
+        this.operationService.atualizarState(this.operation.name, 'verde');
+
+      }
     }, 1000);
-}
+  }
 
   stopTimer(state: string) {
     this.operationService.getTCimposto().subscribe((res: Main[]) => {
@@ -542,12 +537,12 @@ export class CounterComponent implements OnInit, OnDestroy, AfterViewInit {
     clearInterval(this.intervalRef);
     if (
       this.contador > this.lmitedTime &&
-      this.contador < this.lmitedTime * 3
+      this.contador < this.lmitedTime * 2
     ) {
       var body: Nodemcu = {
         count: this.count,
         time: 0,
-        state: 'azul',
+        state: 'vermelho',
         currentTC: this.contador,
         nameId: this.operation,
         maintenance: this.maintenance,
@@ -555,7 +550,7 @@ export class CounterComponent implements OnInit, OnDestroy, AfterViewInit {
         modelo: this.labelPosition,
       };
       this.operationService.post(body).subscribe((res) => { });
-    } else if (this.contador >= this.lmitedTime * 3) {
+    } else if (this.contador >= this.lmitedTime * 2) {
       var body: Nodemcu = {
         count: this.count,
         time: 0,
@@ -693,5 +688,54 @@ export class CounterComponent implements OnInit, OnDestroy, AfterViewInit {
     const dialogRef = this.dialog.open(DialogHelpComponent, {
       data: data,
     });
+  }
+
+  ajustarTempoEnvelhecimento() {
+    if (this.operation.name == "100" || this.operation.name == "110" || this.operation.name == "080" || this.operation.name == "090") {
+      this.lmitedTime = 180
+    }
+  }
+
+  desligarOperacaoNaFonteGrande() {
+    this.operationService.getFonteAtual().then(modelo => {
+      if (modelo.modelo != "storm 200" && modelo.modelo != "bob 200" && modelo.modelo != "lite 200" && modelo.modelo != "storm 120" ) {
+        if (this.operation.name == "020") {
+          this.onFonteGrande = true;
+          this.operationService.atualizarState(this.operation.name, 'verde');
+          clearInterval(this.intervalo);
+          this.vermelhoStateCalled = false;
+          this.tempoOcioso = 0;
+          this.intervaloCounter();
+          this.stateButton = true;
+          this.contador = 0;
+          this.contadorRodando = false;
+          clearInterval(this.intervalRef);
+        } else {
+          this.onFonteGrande = false;
+        }
+      } else {
+        this.onFonteGrande = false;
+      }
+    })
+  }
+
+  analise() {
+    this.operationService.changeAnalise(this.operation.name, !this.analiseButton)
+    this.analiseButton = !this.analiseButton
+    if (this.analiseButton) {
+      this.onAnalise = true;
+      clearInterval(this.intervalo);
+      this.azulStateCalled = true;
+      this.vermelhoStateCalled = false;
+      this.tempoOcioso = 0;
+      this.intervaloCounter();
+      this.stateButton = true;
+      this.contador = 0;
+      this.contadorRodando = false;
+      clearInterval(this.intervalRef);
+    } else {
+      this.azulStateCalled = false;
+      this.onAnalise = false;
+    }
   }
 }

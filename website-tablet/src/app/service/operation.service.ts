@@ -6,6 +6,7 @@ import { Nodemcu } from '../model/nodemcu';
 import { Main } from '../model/main';
 import { Realizado } from '../model/realizado';
 import { environment } from 'src/environments/environment';
+import { Modelo } from '../model/operation/modelo';
 
 const headers = new HttpHeaders({
   'Authorization': 'Bearer meu-token-de-autenticacao',
@@ -31,7 +32,7 @@ export class OperationService {
 
   }
 
-  getByName(name: string){
+  getByName(name: string) {
     return this.http.get<Nodemcu>(environment.url + "nodemcu/" + name)
   }
 
@@ -44,15 +45,15 @@ export class OperationService {
 
   }
 
-  atualizarState(name: string, state: string){
+  atualizarState(name: string, state: string) {
     this.http.get(environment.url + "nodemcu/atualizarState/" + name + "/" + state).subscribe();
   }
 
-  getRealizadoHoraria(name: string): Observable<Realizado>{
+  getRealizadoHoraria(name: string): Observable<Realizado> {
     return this.http.get<Realizado>(environment.url + "realizadoHorariaTablet/" + name)
   }
 
-  atualizarOcupado(name: string, ocupado: boolean): Observable<Operation>{
+  atualizarOcupado(name: string, ocupado: boolean): Observable<Operation> {
     return this.http.get<Operation>(environment.url + `operation/${name}/${ocupado}`)
   }
 
@@ -60,8 +61,8 @@ export class OperationService {
     const dataAtual = new Date();
     const dataFormatada = `${dataAtual.getFullYear()}-${(dataAtual.getMonth() + 1).toString().padStart(2, '0')}-${dataAtual.getDate().toString().padStart(2, '0')}`;
     const horaFormatada = dataAtual.toLocaleTimeString();
-  
-    return this.http.post("http://172.16.34.229:3000/qrcode", {
+
+    return this.http.post("http://172.16.34.147:3000/qrcode", {
       "nome": nome,
       "cod": cod,
       "data": dataFormatada,
@@ -76,13 +77,47 @@ export class OperationService {
     const dataAtual = new Date();
     const dataFormatada = `${dataAtual.getFullYear()}-${(dataAtual.getMonth() + 1).toString().padStart(2, '0')}-${dataAtual.getDate().toString().padStart(2, '0')}`;
     const horaFormatada = dataAtual.toLocaleTimeString();
-  
-    return this.http.post("http://172.16.34.229:3000/indisponivel", {
+
+    return this.http.post("http://172.16.34.147:3000/indisponivel", {
       "op": op,
       "data": dataFormatada,
       "hora": horaFormatada,
     });
   }
+
+  getFonteAtual(): Promise<Modelo> {
+    return new Promise((resolve, reject) => {
+      let modeloAtual: Modelo;
+      this.http.get<Modelo[]>(environment.url + "fonte").subscribe(res => {
+        res.forEach((item: Modelo) => {
+          if (item.is_current == true) {
+            modeloAtual = item;
+            resolve(modeloAtual);
+          }
+        });
+        if (modeloAtual == undefined) {
+          modeloAtual = {
+            modelo: "string",
+            realizado: 0,
+            tempo: 0,
+            is_current: true
+          };
+          this.changeIsCurrent('bob120', true);
+          resolve(modeloAtual);
+        }
+      });
+    });
+  }
   
+  changeIsCurrent(modelo: string, isCurrent: boolean): void {
+    this.http.get(environment.url + "fonte/" + modelo + "/" + isCurrent).subscribe()
+  }
+
+  changeAnalise(nome: string, analise: boolean){
+    this.http.get(environment.url + "operation/analise/" + nome + "/" + analise).subscribe()
+  }
+
+
+
 }
 

@@ -64,4 +64,22 @@ public class OperationController {
             }
         }
 
-    }}
+    }
+    @Transactional
+    @GetMapping("/analise/{name}/{analise}")
+    public void updateAnalise(@PathVariable String name, @PathVariable Boolean analise){
+        OperationModel operation = repository.findByName(name);
+        NodemcuModel nodemcu = nodemcuRepository.findByNameId(operation);
+        if(analise.equals(false)){
+            nodemcu.setState("verde");
+        }else{
+            nodemcu.setState("azul");
+        }
+        nodemcuRepository.save(nodemcu);
+        if (operation != null) {
+            repository.updateAnaliseById(analise, operation.getId());
+        }
+    }
+
+
+}

@@ -27,6 +27,7 @@ public class OperationModel {
 
     private Boolean pausa;
 
+    private Boolean analise;
 
 }
 

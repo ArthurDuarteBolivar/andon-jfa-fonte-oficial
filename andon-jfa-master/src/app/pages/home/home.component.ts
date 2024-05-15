@@ -402,18 +402,18 @@ export class HomeComponent implements OnInit {
     imposto: number,
     realizadoHora: number
   ) {
-    if (this.dialog.openDialogs.length > 0) {
-      return;
-    }
+    // if (this.dialog.openDialogs.length > 0) {
+    //   return;
+    // }
 
-    const dialogRef = this.dialog.open(DialogControleRealizadoComponent);
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result.length > 5) {
-        this.mainService
-          .postControleRealizado(imposto, realizado, realizadoHora, result)
-          .subscribe((res) => {});
-      }
-    });
+    // const dialogRef = this.dialog.open(DialogControleRealizadoComponent);
+    // dialogRef.afterClosed().subscribe((result) => {
+    //   if (result.length > 5) {
+    //     this.mainService
+    //       .postControleRealizado(imposto, realizado, realizadoHora, result)
+    //       .subscribe((res) => {});
+    //   }
+    // });
   }
 
   getRealizado() {

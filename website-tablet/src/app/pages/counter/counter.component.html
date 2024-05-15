@@ -1,176 +1,181 @@
 <!-- <input type="text" autofocus class="inputGeral"> -->
-<section (click)="enterFullscreen()"
-      [ngClass]="{'animationBlue': azulStateCalled || contador > lmitedTime}"
-      [ngClass]="{'animationRed': vermelhoStateCalled || lmitedTime && contador > lmitedTime * 3}">
-         
+<button class="analiseButton" (click)="analise()">Analise</button>
+<section (click)="enterFullscreen()" [ngClass]="{'animationBlue': azulStateCalled}"
+  [ngClass]="{'animationRed': vermelhoStateCalled || lmitedTime && contador > lmitedTime}">
+
   <!--<span *ngIf="nomeOperador != ''">Nome: {{nomeOperador}}</span> -->
-    <div class="info">      
-        <div>
-            <h1>REALIZADO: {{count}}</h1> 
-            <h1>OP: {{operation.name}} F</h1>
-            <h1>REALIZADO HR: {{realizadoHoraAtual}}</h1>
-          </div>
-          
-          <h1 [ngStyle]="{'color': contador < lmitedTime ? '#00FF00':  (contador > lmitedTime && contador < lmitedTime * 3 ? '#5ac5e9' : 'red')
-          }">TEMPO: {{contador}}s</h1>
-        </div>
-        <div class="actions">
-        <button (click)="toggleContagem('count')" *ngIf="stateButton == false">TERMINAR</button>
-        
-        <button *ngIf="loadingButton" disabled="true">AGUARDE</button>
-        <button (click)="toggleContagem('count')" *ngIf="stateButton && loadingButton == false" [disabled]="onPausa">INICIAR</button>
-        <button [disabled]="stateButton" (click)="toggleContagem('refuse')">REFUGO<input class="inputGeral" onfocus="this.removeAttribute('readonly');" readonly="readonly" [(ngModel)]="qrcodeValue" (keyup)="qrCodeStart()" #meuInput type="text" autofocus></button>
-        <button (click)="openDialog()">TUTORIAL</button>
+  <div class="info">
+    <div>
+      <h1>REALIZADO: {{count}}</h1>
+      <h1>OP: {{operation.name}} F</h1>
+      <h1>REALIZADO HR: {{realizadoHoraAtual}}</h1>
     </div>
-    <table class="realizado" *ngIf="realizadoHora && operation.name == '010' || operation.name == '020' || operation.name == '030' || operation.name == '040' || operation.name == '050' || operation.name == '060' || operation.name == '070' || operation.name == '120' || operation.name == '130' || operation.name == '140' || operation.name == '150' || operation.name == '160'">
-        <tr>
-          <td class="horas">
-            8
-          </td>
-          <td class="horas">
-            9
-          </td>
-          <td class="horas">
-            10
-          </td>
-    
-          <td class="horas">
-            11
-          </td>
-    
-          <td class="horas">
-            12
-          </td>
-    
-          <td class="horas">
-            13
-          </td>
-    
-          <td class="horas">
-            14
-          </td>
-    
-          <td class="horas">
-            15
-          </td>
-    
-          <td class="horas">
-            16
-          </td>
-    
-          <td class="horas">
-            17
-          </td>
-        </tr>
-        <tr>
-    
-          <td class="valor" [ngStyle]="{
+
+    <h1 [ngStyle]="{'color': contador < lmitedTime ? '#00FF00':  (contador > lmitedTime && contador < lmitedTime ? '#00FF00' : 'red')
+          }">TEMPO: {{contador}}s</h1>
+  </div>
+  <div class="actions">
+    <button (click)="toggleContagem('count')" *ngIf="stateButton == false">TERMINAR</button>
+
+    <button *ngIf="loadingButton" disabled="true">AGUARDE</button>
+    <button (click)="toggleContagem('count')" *ngIf="stateButton && loadingButton == false"
+      [disabled]="onPausa || onAnalise || onFonteGrande">INICIAR</button>
+    <button [disabled]="stateButton" (click)="toggleContagem('refuse')">REFUGO<input class="inputGeral"
+        onfocus="this.removeAttribute('readonly');" readonly="readonly" [(ngModel)]="qrcodeValue"
+        (keyup)="qrCodeStart()" #meuInput type="text" autofocus></button>
+    <button (click)="openDialog()">TUTORIAL</button>
+  </div>
+  <table class="realizado"
+    *ngIf="realizadoHora && operation.name == '010' || operation.name == '020' || operation.name == '030' || operation.name == '040' || operation.name == '050' || operation.name == '060' || operation.name == '070' || operation.name == '120' || operation.name == '130' || operation.name == '140' || operation.name == '150' || operation.name == '160'">
+    <tr>
+      <td class="horas">
+        8
+      </td>
+      <td class="horas">
+        9
+      </td>
+      <td class="horas">
+        10
+      </td>
+
+      <td class="horas">
+        11
+      </td>
+
+      <td class="horas">
+        12
+      </td>
+
+      <td class="horas">
+        13
+      </td>
+
+      <td class="horas">
+        14
+      </td>
+
+      <td class="horas">
+        15
+      </td>
+
+      <td class="horas">
+        16
+      </td>
+
+      <td class="horas">
+        17
+      </td>
+    </tr>
+    <tr>
+
+      <td class="valor" [ngStyle]="{
               'background-color': realizadoHora.horas7 >= (minutos8 * (imposto / shiftTime / 60)) - 0.5  ? '#00FF00' : 'red'
             }">{{realizadoHora.horas7}}</td>
-          <td class="valor" [ngStyle]="{
+      <td class="valor" [ngStyle]="{
               'background-color': realizadoHora.horas8 >= (minutos9 * (imposto / shiftTime / 60)) - 0.5  ? '#00FF00' : 'red'
             }">{{realizadoHora.horas8}}</td>
-          <td class="valor" [ngStyle]="{
+      <td class="valor" [ngStyle]="{
               'background-color': realizadoHora.horas9 >= (minutos10 * (imposto / shiftTime / 60)) - 0.5  ? '#00FF00' : 'red'
             }">{{realizadoHora.horas9}}</td>
-          <td class="valor" [ngStyle]="{
+      <td class="valor" [ngStyle]="{
               'background-color': realizadoHora.horas10 >= (minutos11 * (imposto / shiftTime / 60)) - 0.5  ? '#00FF00' : 'red'
             }">{{realizadoHora.horas10}}</td>
-          <td class="valor" [ngStyle]="{
+      <td class="valor" [ngStyle]="{
               'background-color': realizadoHora.horas11 >= (minutos12 * (imposto / shiftTime / 60)) - 0.5  ? '#00FF00' : 'red'
             }">{{realizadoHora.horas11}}</td>
-          <td class="valor" [ngStyle]="{
+      <td class="valor" [ngStyle]="{
               'background-color': realizadoHora.horas12 >= (minutos13 * (imposto / shiftTime / 60)) - 0.5 ? '#00FF00' : 'red'
             }">{{realizadoHora.horas12}}</td>
-          <td class="valor" [ngStyle]="{
+      <td class="valor" [ngStyle]="{
               'background-color': realizadoHora.horas13 >= (minutos14 * (imposto / shiftTime / 60)) - 0.5 ? '#00FF00' : 'red'
             }">{{realizadoHora.horas13}}</td>
-          <td class="valor" [ngStyle]="{
+      <td class="valor" [ngStyle]="{
               'background-color': realizadoHora.horas14 >= (minutos15 * (imposto / shiftTime / 60)) - 0.5 ? '#00FF00' : 'red'
             }">{{realizadoHora.horas14}}</td>
-          <td class="valor" [ngStyle]="{
+      <td class="valor" [ngStyle]="{
               'background-color': realizadoHora.horas15 >= (minutos16 * (imposto / shiftTime / 60)) - 0.5? '#00FF00' : 'red'
             }">{{realizadoHora.horas15}}</td>
-          <td class="valor" [ngStyle]="{
+      <td class="valor" [ngStyle]="{
               'background-color': realizadoHora.horas16 >= (minutos17 * (imposto / shiftTime / 60)) - 0.5 ? '#00FF00' : 'red'
             }">{{realizadoHora.horas16}}</td>
-        </tr>
-      </table>
-    <table class="realizado" *ngIf="realizadoHora && operation.name == '080' || operation.name == '090' || operation.name == '100' || operation.name == '110'" >
-        <tr>
-          <td class="horas">
-            8
-          </td>
-          <td class="horas">
-            9
-          </td>
-          <td class="horas">
-            10
-          </td>
-    
-          <td class="horas">
-            11
-          </td>
-    
-          <td class="horas">
-            12
-          </td>
-    
-          <td class="horas">
-            13
-          </td>
-    
-          <td class="horas">
-            14
-          </td>
-    
-          <td class="horas">
-            15
-          </td>
-    
-          <td class="horas">
-            16
-          </td>
-    
-          <td class="horas">
-            17
-          </td>
-        </tr>
-        <tr>
-    
-          <td class="valor" [ngStyle]="{
+    </tr>
+  </table>
+  <table class="realizado"
+    *ngIf="realizadoHora && operation.name == '080' || operation.name == '090' || operation.name == '100' || operation.name == '110'">
+    <tr>
+      <td class="horas">
+        8
+      </td>
+      <td class="horas">
+        9
+      </td>
+      <td class="horas">
+        10
+      </td>
+
+      <td class="horas">
+        11
+      </td>
+
+      <td class="horas">
+        12
+      </td>
+
+      <td class="horas">
+        13
+      </td>
+
+      <td class="horas">
+        14
+      </td>
+
+      <td class="horas">
+        15
+      </td>
+
+      <td class="horas">
+        16
+      </td>
+
+      <td class="horas">
+        17
+      </td>
+    </tr>
+    <tr>
+
+      <td class="valor" [ngStyle]="{
               'background-color': realizadoHora.horas7 >= ((minutos8 * (imposto / shiftTime / 60)) - 0.5) / 2  ? '#00FF00' : 'red'
             }">{{realizadoHora.horas7}}</td>
-          <td class="valor" [ngStyle]="{
+      <td class="valor" [ngStyle]="{
               'background-color': realizadoHora.horas8 >= ((minutos9 * (imposto / shiftTime / 60)) - 0.5) / 2  ? '#00FF00' : 'red'
             }">{{realizadoHora.horas8}}</td>
-          <td class="valor" [ngStyle]="{
+      <td class="valor" [ngStyle]="{
               'background-color': realizadoHora.horas9 >= ((minutos10 * (imposto / shiftTime / 60)) - 0.5) / 2  ? '#00FF00' : 'red'
             }">{{realizadoHora.horas9}}</td>
-          <td class="valor" [ngStyle]="{
+      <td class="valor" [ngStyle]="{
               'background-color': realizadoHora.horas10 >= ((minutos11 * (imposto / shiftTime / 60)) - 0.5) / 2  ? '#00FF00' : 'red'
             }">{{realizadoHora.horas10}}</td>
-          <td class="valor" [ngStyle]="{
+      <td class="valor" [ngStyle]="{
               'background-color': realizadoHora.horas11 >= ((minutos12 * (imposto / shiftTime / 60)) - 0.5) / 2  ? '#00FF00' : 'red'
             }">{{realizadoHora.horas11}}</td>
-          <td class="valor" [ngStyle]="{
+      <td class="valor" [ngStyle]="{
               'background-color': realizadoHora.horas12 >= ((minutos13 * (imposto / shiftTime / 60)) - 0.5) / 2 ? '#00FF00' : 'red'
             }">{{realizadoHora.horas12}}</td>
-          <td class="valor" [ngStyle]="{
+      <td class="valor" [ngStyle]="{
               'background-color': realizadoHora.horas13 >= ((minutos14 * (imposto / shiftTime / 60)) - 0.5) / 2 ? '#00FF00' : 'red'
             }">{{realizadoHora.horas13}}</td>
-          <td class="valor" [ngStyle]="{
+      <td class="valor" [ngStyle]="{
               'background-color': realizadoHora.horas14 >= ((minutos15 * (imposto / shiftTime / 60)) - 0.5) / 2 ? '#00FF00' : 'red'
             }">{{realizadoHora.horas14}}</td>
-          <td class="valor" [ngStyle]="{
+      <td class="valor" [ngStyle]="{
               'background-color': realizadoHora.horas15 >= ((minutos16 * (imposto / shiftTime / 60)) - 0.5) / 2? '#00FF00' : 'red'
             }">{{realizadoHora.horas15}}</td>
-          <td class="valor" [ngStyle]="{
+      <td class="valor" [ngStyle]="{
               'background-color': realizadoHora.horas16 >= ((minutos17 * (imposto / shiftTime / 60)) - 0.5) / 2 ? '#00FF00' : 'red'
             }">{{realizadoHora.horas16}}</td>
-        </tr>
-      </table>
-    <!-- <div (click)="openDialog()" class="help">
+    </tr>
+  </table>
+  <!-- <div (click)="openDialog()" class="help">
         <h1><mat-icon>help_outline</mat-icon>TUTORIAL</h1>
     </div> -->
 </section>
