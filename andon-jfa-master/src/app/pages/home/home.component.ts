@@ -68,6 +68,7 @@ export class HomeComponent implements OnInit {
   
   hours: any;
   effectiveTime: any;
+  calculoImposto  = 0;
   ProportionalDiscount: number = 0;
   init: boolean = false;
   currentTC: number[] = [];
@@ -120,7 +121,7 @@ export class HomeComponent implements OnInit {
       this.realizadoHora = res[0];
     });
     setInterval(() => {
-      this.impostodivididoporshift = this.imposto / this.shiftTime / 60;
+      this.impostodivididoporshift = (this.imposto / this.shiftTime / 60);
       this.diaDaSemanda = new Date();
       this.horasAtuais = new Date().getHours();
       this.mainService.getControleRealizadoByDate().subscribe((res) => {
@@ -364,6 +365,7 @@ export class HomeComponent implements OnInit {
         this.getRealizado();
       });
       this.dataAtual = new Date();
+
     }, 1000);
     setInterval(() => {
       this.nodemcuService.getAllRealizado().subscribe((res) => {
@@ -459,6 +461,10 @@ export class HomeComponent implements OnInit {
           this.date / (this.TCimpostado / 60) - this.ProportionalDiscount;
       }, 3000)
     }
+  }
+
+  parseToInt(value: string): number {
+    return parseInt(value, 0);
   }
 
   openDialog() {

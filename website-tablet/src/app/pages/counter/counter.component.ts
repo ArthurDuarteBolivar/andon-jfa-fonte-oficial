@@ -91,13 +91,13 @@ export class CounterComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('meuInput') meuInputRef!: ElementRef;
 
   ngAfterViewInit(): void {
-    this.meuInputRef.nativeElement.focus();
+    // this.meuInputRef.nativeElement.focus();
   }
 
   ngOnInit() {
 
     setInterval(() => {
-      this.meuInputRef.nativeElement.focus();
+      // this.meuInputRef.nativeElement.focus();
     }, 100)
 
     this.nomeOperador = this.storage.getItem("nome")!;
@@ -396,7 +396,7 @@ export class CounterComponent implements OnInit, OnDestroy, AfterViewInit {
 
       this.toggleContagem('count');
       this.qrcodeValue = ''
-      this.meuInputRef.nativeElement.focus();
+      // this.meuInputRef.nativeElement.focus();
     }
     setTimeout(() => {
       this.qrcodeValue = ""
@@ -414,7 +414,7 @@ export class CounterComponent implements OnInit, OnDestroy, AfterViewInit {
 
   intervaloCounter() {
     this.intervalo = setInterval(() => {
-      if (!this.contadorRodando && this.analiseButton != true && this.onAnalise != true && this.onFonteGrande != true) { 
+      if (!this.contadorRodando && this.analiseButton != true && this.onAnalise != true && this.onFonteGrande != true) {
         console.log(this.tempoOcioso)
         if (this.tempoOcioso > this.limitedTimeOcioso) {
           if (!this.vermelhoStateCalled) {
@@ -422,8 +422,11 @@ export class CounterComponent implements OnInit, OnDestroy, AfterViewInit {
             this.vermelhoStateCalled = true;
           }
         }
-
+        if (this.tempoOcioso == parseInt((this.limitedTimeOcioso + 60).toFixed(0))) {
+          this.operationService.changeTimeExcess(this.operation.name)
+        }
         this.tempoOcioso++;
+
       }
     }, 1000);
   }
@@ -468,7 +471,7 @@ export class CounterComponent implements OnInit, OnDestroy, AfterViewInit {
         this.stateButton = true;
         this.contador = 0;
         this.operationService.atualizar(this.operation.name, this.contador);
-        this.meuInputRef.nativeElement.focus();
+        // this.meuInputRef.nativeElement.focus();
       } else {
         this.openDialogAviso();
         this.operationService.postIndisponivel(this.operation.name).subscribe()
@@ -698,7 +701,7 @@ export class CounterComponent implements OnInit, OnDestroy, AfterViewInit {
 
   desligarOperacaoNaFonteGrande() {
     this.operationService.getFonteAtual().then(modelo => {
-      if (modelo.modelo != "storm 200" && modelo.modelo != "bob 200" && modelo.modelo != "lite 200" && modelo.modelo != "storm 120" ) {
+      if (modelo.modelo != "storm 200" && modelo.modelo != "bob 200" && modelo.modelo != "lite 200" && modelo.modelo != "storm 120") {
         if (this.operation.name == "020") {
           this.onFonteGrande = true;
           this.operationService.atualizarState(this.operation.name, 'verde');
@@ -725,14 +728,16 @@ export class CounterComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.analiseButton) {
       this.onAnalise = true;
       clearInterval(this.intervalo);
-      this.azulStateCalled = true;
-      this.vermelhoStateCalled = false;
       this.tempoOcioso = 0;
       this.intervaloCounter();
       this.stateButton = true;
       this.contador = 0;
       this.contadorRodando = false;
       clearInterval(this.intervalRef);
+      this.vermelhoStateCalled = false;
+      setTimeout(() => {
+        this.azulStateCalled = true;
+      }, 100)
     } else {
       this.azulStateCalled = false;
       this.onAnalise = false;

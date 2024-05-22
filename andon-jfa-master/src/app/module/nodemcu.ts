@@ -16,4 +16,6 @@ export interface Nodemcu {
     qtdeTCexcedido: number;
     tcmedio: number;
     localTC: number;
+    analise: number;
+    time_excess: number;
 }

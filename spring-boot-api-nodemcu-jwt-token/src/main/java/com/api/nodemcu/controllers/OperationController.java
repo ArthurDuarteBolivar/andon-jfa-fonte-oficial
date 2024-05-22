@@ -73,6 +73,7 @@ public class OperationController {
         if(analise.equals(false)){
             nodemcu.setState("verde");
         }else{
+            nodemcu.setAnalise(nodemcu.getAnalise() + 1);
             nodemcu.setState("azul");
         }
         nodemcuRepository.save(nodemcu);

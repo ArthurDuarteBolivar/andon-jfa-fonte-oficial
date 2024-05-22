@@ -87,12 +87,25 @@ public class NodemcuController {
         return repository.findAll();
     }
 
+
+
     @GetMapping("/{name}")
     public NodemcuModel findByName(@PathVariable String name) {
         OperationModel operation = operationRepository.findByName(name);
         NodemcuModel nodemcu = repository.findByNameId(operation);
         return nodemcu;
     }
+
+    @GetMapping("/timeExcess/{name}")
+    public void AddTimeExcess(@PathVariable String name){
+        OperationModel operation = operationRepository.findByName(name);
+        NodemcuModel nodemcu = repository.findByNameId(operation);
+        nodemcu.setState("piscar");
+        nodemcu.setTime_excess(nodemcu.getTime_excess() + 1);
+        repository.save((nodemcu));
+    }
+
+
 
     @PostMapping()
     public NodemcuModel post(@RequestBody NodemcuModel device) {

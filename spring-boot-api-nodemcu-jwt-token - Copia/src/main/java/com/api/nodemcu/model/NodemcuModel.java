@@ -18,7 +18,7 @@ public class NodemcuModel {
     private int id;
 
     @OneToOne
-    @JoinTable(name = "nameId")
+    @JoinColumn(name = "name_id")
     private OperationModel nameId;
 
     @ManyToOne

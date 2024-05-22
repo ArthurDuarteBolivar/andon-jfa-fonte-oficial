@@ -63,6 +63,7 @@ section {
     }
     
     td { 
+      position: relative;
       padding: 0;
       min-width: 42px;
       min-height: 22px;
@@ -73,6 +74,21 @@ section {
       color: black;
       text-align: center;
       font-size: 1.5rem;
+      span{
+        position: absolute;
+        font-size: 1.2rem;
+        margin: 0px 5px;
+      }
+      span:nth-child(1){
+        color: blue;
+        bottom: 0;
+        left: 0;
+      }
+      span:nth-child(2){
+        color: red;
+        bottom: 0;
+        right: 0;
+      }
     }
   }
   .div2 {

@@ -78,7 +78,7 @@ export class OperationService {
     const dataFormatada = `${dataAtual.getFullYear()}-${(dataAtual.getMonth() + 1).toString().padStart(2, '0')}-${dataAtual.getDate().toString().padStart(2, '0')}`;
     const horaFormatada = dataAtual.toLocaleTimeString();
 
-    return this.http.post("http://172.16.34.147:3000/indisponivel", {
+    return this.http.post("http://172.16.34.229:3000/indisponivel", {
       "op": op,
       "data": dataFormatada,
       "hora": horaFormatada,
@@ -116,8 +116,13 @@ export class OperationService {
   changeAnalise(nome: string, analise: boolean){
     this.http.get(environment.url + "operation/analise/" + nome + "/" + analise).subscribe()
   }
+  //changeTreinamento(nome: string, treinamento: boolean){
+    //this.http.get(environment.url + "opeartion/treinamento/" +  nome + "/" + treinamento).subscribe()
+  //}
 
-
+  changeTimeExcess(name: string){
+    this.http.get(environment.url + "nodemcu/timeExcess/" + name).subscribe()
+  }
 
 }
 

@@ -37,6 +37,10 @@ public class NodemcuModel {
 
     private Integer currentTC;
 
+    private Integer analise;
+
+    private Integer time_excess;
+
     private Integer maintenance;
 
     private Integer firtlastTC;

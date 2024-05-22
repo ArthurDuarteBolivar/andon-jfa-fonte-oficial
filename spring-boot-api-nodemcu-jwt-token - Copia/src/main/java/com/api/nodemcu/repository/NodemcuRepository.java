@@ -19,8 +19,6 @@ public interface NodemcuRepository extends JpaRepository<NodemcuModel, Integer> 
 
      NodemcuModel findByNameId(OperationModel nameId);
 
-
-
     <NodemcuMod extends NodemcuModel> NodemcuMod save(NodemcuMod nodemcu);
 
 }

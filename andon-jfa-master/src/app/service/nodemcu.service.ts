@@ -38,4 +38,5 @@ export class NodemcuService {
   postPausa(){
     this.http.post(environment.url+ "pausa", {}).subscribe()
   }
+
 }
